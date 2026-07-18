@@ -1,0 +1,11 @@
+services:
+  db:
+    image: postgis/postgis:16-3.4 # PostGIS inclus, l'extension est créée à l'init
+    environment:
+      POSTGRES_DB: yobu
+      POSTGRES_USER: yobu
+      POSTGRES_PASSWORD: secret
+    ports: ["5432:5432"]
+    volumes: ["dbdata:/var/lib/postgresql/data"]
+volumes:
+  dbdata:

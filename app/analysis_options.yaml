@@ -1,0 +1,7 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    # Les checkouts Swift Package Manager de Firebase atterrissent dans build/
+    # et ne doivent jamais être analysés.
+    - build/**

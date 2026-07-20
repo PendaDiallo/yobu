@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 /**
@@ -12,10 +11,15 @@ use Illuminate\Support\Str;
  */
 class UserFactory extends Factory
 {
-    /**
-     * The current password being used by the factory.
-     */
-    protected static ?string $password;
+    private const FIRST_NAMES = [
+        'Awa', 'Moussa', 'Fatou', 'Ibrahima', 'Aminata', 'Ousmane',
+        'Mariama', 'Cheikh', 'Astou', 'Mamadou', 'Ndeye', 'Abdoulaye',
+    ];
+
+    private const LAST_NAMES = [
+        'Ndiaye', 'Diop', 'Sarr', 'Fall', 'Sow', 'Ba', 'Gueye', 'Faye',
+        'Diallo', 'Cissé', 'Mbaye', 'Sy',
+    ];
 
     /**
      * Define the model's default state.
@@ -25,21 +29,18 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
-            'remember_token' => Str::random(10),
+            'firebase_uid' => (string) Str::uuid(),
+            'phone' => '+2217'.fake()->randomElement(['0', '5', '6', '7', '8'])
+                .fake()->unique()->numerify('#######'),
+            'first_name' => fake()->randomElement(self::FIRST_NAMES),
+            'last_name' => fake()->randomElement(self::LAST_NAMES),
+            'photo_url' => null,
+            'role' => 'rider',
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
-    public function unverified(): static
+    public function driver(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
-        ]);
+        return $this->state(['role' => 'driver']);
     }
 }

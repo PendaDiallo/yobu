@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -20,20 +20,16 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'firebase_uid',
+        'phone',
+        'first_name',
+        'last_name',
+        'photo_url',
+        'role',
+        'fcm_token',
     ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    // rating, rating_count, trips_completed : écrits par les Services, jamais
+    // en mass assignment.
 
     /**
      * Get the attributes that should be cast.
@@ -43,8 +39,29 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'rating' => 'decimal:1',
         ];
+    }
+
+    /** Les trajets récurrents publiés en tant que conducteur. */
+    public function trips(): HasMany
+    {
+        return $this->hasMany(Trip::class, 'driver_id');
+    }
+
+    /** Les réservations faites en tant que passager. */
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class, 'rider_id');
+    }
+
+    public function ratingsGiven(): HasMany
+    {
+        return $this->hasMany(Rating::class, 'from_user_id');
+    }
+
+    public function ratingsReceived(): HasMany
+    {
+        return $this->hasMany(Rating::class, 'to_user_id');
     }
 }

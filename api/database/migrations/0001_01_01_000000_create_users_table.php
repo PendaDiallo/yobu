@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -11,22 +12,27 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // L'image postgis/postgis la crée déjà en local ; indispensable en prod.
+        DB::statement('CREATE EXTENSION IF NOT EXISTS postgis');
+
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
+            $table->string('firebase_uid')->unique();
+            $table->string('phone')->unique(); // +221...
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('photo_url')->nullable();
+            $table->enum('role', ['driver', 'rider', 'both'])->nullable();
+            // Écrit par RatingService UNIQUEMENT.
+            $table->decimal('rating', 2, 1)->default(0);
+            $table->integer('rating_count')->default(0);
+            $table->integer('trips_completed')->default(0);
+            $table->string('fcm_token')->nullable();
             $table->timestamps();
+            // Pas de colonne badges : ils sont dérivés (docs/02-technique.md §4ter).
         });
 
-        Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->string('email')->primary();
-            $table->string('token');
-            $table->timestamp('created_at')->nullable();
-        });
-
+        // Auth par OTP Firebase : ni email, ni password, ni reset de mot de passe.
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->foreignId('user_id')->nullable()->index();
@@ -43,7 +49,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
     }
 };

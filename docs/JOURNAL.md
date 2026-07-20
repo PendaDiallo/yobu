@@ -154,6 +154,70 @@ Documenté dans `CLAUDE.md` (conventions app) et `docs/02-technique.md §10` (ex
 
 > ~~⚠️ **À FAIRE : migrer l'échafaudage existant.**~~ ✅ **Fait le 18/07** — écrans déplacés vers `presentation/screens/`, client réseau vers `core/network/`, gabarits `domain/`/`data/` posés. Voir l'entrée du 18/07.
 
+---
+
+### J1-anticipé — 18 juillet 2026 — Setup local + migration Clean Architecture
+
+**Fait :**
+- Monorepo initialisé : `api/` (Laravel 12, Sanctum, kreait/laravel-firebase, preventLazyLoading) + `app/` (Flutter, Riverpod, go_router, dio, freezed).
+- Docker + PostGIS en local (colima) : `SELECT PostGIS_Version()` → 3.4. Base `yobu_test` sur `template_postgis`, les tests tournent sur Postgres.
+- `GET /api/health` → `{"ok":true,"postgis":"3.4"}`, testé.
+- 16 routes go_router (écrans vides), intercepteur Bearer, API_URL par `--dart-define` (défaut `10.0.2.2:8000`). AVD `yobu_pixel` créé, l'app tourne dessus.
+- Émulateur Firebase Auth opérationnel (`firebase emulators:start --project demo-yobu`, port 9099) — zéro SMS facturé en dev.
+- **Migration Clean Architecture 3 couches** : écrans → `presentation/screens/`, client réseau → `core/network/`, gabarits `domain/`/`data/` posés.
+- Poussé sur GitHub (`PendaDiallo/yobu`).
+
+**Critère de fin atteint :** oui pour le local — la prod (VPS) reste le prompt 2/2 du J1.
+
+**Coupé / reporté :**
+- Projet Firebase réel + `flutterfire configure` + numéros de test console → J4 (DETTE.md).
+- Déploiement VPS, backups, alerte budget → dès que le VPS est commandé.
+
+**Ce que j'ai appris :**
+- **Laravel 11 est EOL sécurité depuis mars 2026** — Composer refuse de l'installer. Passé en Laravel 12, CLAUDE.md mis à jour.
+- PHP local en 8.5 : `composer config platform.php 8.3.0` fait résoudre les deps comme en prod.
+- `sdkmanager`/`avdmanager` ont besoin du JDK d'Android Studio (JAVA_HOME vers le JBR).
+
+**Bloqué sur :**
+- VPS pas encore commandé → le déploiement attend.
+
+---
+
+### J2 — 18 juillet 2026 (anticipé) — Design system : tokens + les 9 du socle
+
+**Fait :**
+- `tokens.dart` direction B — couleurs/espacements/radius/typo du brief §2, Plus Jakarta Sans, tabular-nums partout.
+- Les 9 widgets du socle, tous variants et états. TripCard : le prix écrase tout.
+- Route `/debug` : galerie de tous les composants, vérifiée sur émulateur (6 captures, interactions testées).
+- Contraste vérifié : jamais de blanc sur le vert vif ; jour actif du DayPicker = texte vert profond sur vif (5,3:1).
+
+**Critère de fin atteint :** oui — `flutter analyze` sans warning, galerie visuelle validée.
+
+**Coupé / reporté :**
+- Les 4 composants de feature (PlaceField, WhatsAppButton, RouteMap, TagChip) → J7/J11/J14, comme prévu.
+- La maquette 🎨 TripCard (Claude Design) n'a pas été faite en amont — à rattraper si besoin avant le J5.
+
+**Ce que j'ai appris :**
+- google_fonts télécharge la police au premier lancement → bundler les .ttf avant le build store (DETTE.md).
+
+---
+
+### J3 — 18 juillet 2026 (anticipé) — Schéma : 4 migrations, index GIST, modèles
+
+**Fait :**
+- Les 4 migrations conformes à `02-technique.md §3` : geography(4326) partout, `departure_time` en TIME, `days_of_week smallint[]`, tous les index dont les 2 GIST et le INCLUDE.
+- Modèles + relations + cast `PgArray` (Eloquent ne parle pas smallint[] nativement).
+- Factories sur le corridor réel Keur Massar → Plateau, seeder « un matin plausible » + conducteur stable pour Postman (+221770000001).
+- Test qui verrouille `departure_time` en TIME (colonne ET modèle).
+- Vérifié : `ST_DWithin`/`ST_Distance` renvoient des mètres sur les données seedées.
+
+**Critère de fin atteint :** oui — `migrate:fresh --seed` passe, 5 tests verts.
+
+**Ce que j'ai appris :**
+- Le schema builder ne sait faire ni smallint[], ni INCLUDE, ni DESC dans un index → `DB::statement`, assumé dans les migrations.
+
+**Demain :** J4 — auth téléphone de bout en bout (créer le vrai projet Firebase avant de commencer).
+
 <!-- Nouvelles entrées AU-DESSUS de cette ligne, la plus récente en premier -->
 
 ---
@@ -162,9 +226,9 @@ Documenté dans `CLAUDE.md` (conventions app) et `docs/02-technique.md §10` (ex
 
 | | Cible | Réel |
 |---|---|---|
-| **Jour actuel** | J20 le 14 août | J0 |
-| **Endpoints finis** | 17 | 0 |
-| **Composants finis** | 13 (8 au J2) | 0 |
+| **Jour actuel** | J20 le 14 août | J3 fait le 18/07 — en avance |
+| **Endpoints finis** | 17 | 0 (+ /health, hors liste) |
+| **Composants finis** | 13 (8 au J2) | 9 |
 | **Écrans finis** | 16 | 0 |
 | **Jours de retard** | 0 | 0 |
 | **Marge restante** | J10 + J15 | intacte |

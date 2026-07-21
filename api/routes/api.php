@@ -11,4 +11,7 @@ Route::post('/auth/firebase', [AuthController::class, 'firebase']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [MeController::class, 'show']);
+    Route::patch('/me', [MeController::class, 'update']);
+    Route::post('/me/photo', [MeController::class, 'storePhoto']);
+    Route::post('/me/fcm-token', [MeController::class, 'storeFcmToken']);
 });

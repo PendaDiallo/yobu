@@ -18,7 +18,7 @@
 | [J2](jours/J02-design-system.md) | mar 21/07 | 🎨 | Les tokens + les 9 composants du socle, dont **`TripCard`** | **OK** |
 | [J3](jours/J03-schema.md) | mer 22/07 | | Les 4 migrations avec les index GIST, les modèles Eloquent | **OK** |
 | [J4](jours/J04-auth.md) | jeu 23/07 | 🎨 | Auth téléphone de bout en bout — **tester 3 vrais numéros +221** | **OK**¹ |
-| [J5](jours/J05-profil.md) | ven 24/07 | 🎨 | Profil complet avec photo, puis on s'arrête | |
+| [J5](jours/J05-profil.md) | ven 24/07 | 🎨 | Profil complet avec photo, puis on s'arrête | **OK** |
 
 ## Semaine 2 — Le cœur
 

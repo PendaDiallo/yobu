@@ -242,6 +242,24 @@ Documenté dans `CLAUDE.md` (conventions app) et `docs/02-technique.md §10` (ex
 
 **Demain :** J5 — profil complet avec photo.
 
+---
+
+### J5 — 21 juillet 2026 — Profil complet avec photo
+
+**Fait :**
+- PATCH /api/me, POST /api/me/photo (GD : 800px/JPEG 80, EXIF, remplacement), POST /api/me/fcm-token. 20 tests verts.
+- Vérifié pour de vrai : PATCH avec rating=5 → ignoré. $fillable strict.
+- Les 3 écrans profil (setup/view/edit), ProfileForm partagé, e2e émulateur jusqu'à la photo servie par l'API.
+
+**Critère de fin atteint :** oui — profil + photo de bout en bout, rating inviolable.
+
+**Bilan semaine 1 (tableau de bord) :**
+- Endpoints finis : 5/17 · Composants : 9/13 · Écrans finis : 5/16
+- J1 à J5 faits en 2 jours calendaires (18 et 21/07) — 3 jours d'avance.
+- Reste ouvert : VPS (J1-déploiement), Blaze/SMS réels (dette, avant J18).
+
+**Demain :** J6 — API publier un trajet + fourchette de prix. On ne prend PAS d'avance sur la S2 ce soir (règle de la fiche J5).
+
 <!-- Nouvelles entrées AU-DESSUS de cette ligne, la plus récente en premier -->
 
 ---
@@ -250,10 +268,10 @@ Documenté dans `CLAUDE.md` (conventions app) et `docs/02-technique.md §10` (ex
 
 | | Cible | Réel |
 |---|---|---|
-| **Jour actuel** | J20 le 14 août | J3 fait le 18/07 — en avance |
-| **Endpoints finis** | 17 | 0 (+ /health, hors liste) |
+| **Jour actuel** | J20 le 14 août | J5 fait le 21/07 — 3 j d'avance |
+| **Endpoints finis** | 17 | 5 (+ /health, hors liste) |
 | **Composants finis** | 13 (8 au J2) | 9 |
-| **Écrans finis** | 16 | 0 |
+| **Écrans finis** | 16 | 5 (phone_auth, otp_verify, profil ×3) |
 | **Jours de retard** | 0 | 0 |
 | **Marge restante** | J10 + J15 | intacte |
 | **Conducteurs contactés** | 40 au J20 | 0 |

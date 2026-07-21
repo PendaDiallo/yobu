@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../theme/tokens.dart';
 
@@ -16,6 +17,9 @@ class YobuTextField extends StatelessWidget {
     this.obscureText = false,
     this.enabled = true,
     this.onChanged,
+    this.prefixText,
+    this.inputFormatters,
+    this.autofocus = false,
   });
 
   final String label;
@@ -27,6 +31,11 @@ class YobuTextField extends StatelessWidget {
   final bool obscureText;
   final bool enabled;
   final ValueChanged<String>? onChanged;
+
+  /// Préfixe non éditable, ex. « +221 ».
+  final String? prefixText;
+  final List<TextInputFormatter>? inputFormatters;
+  final bool autofocus;
 
   OutlineInputBorder _border(Color color, [double width = 1]) {
     return OutlineInputBorder(
@@ -51,8 +60,12 @@ class YobuTextField extends StatelessWidget {
           obscureText: obscureText,
           enabled: enabled,
           onChanged: onChanged,
+          inputFormatters: inputFormatters,
+          autofocus: autofocus,
           style: AppText.body,
           decoration: InputDecoration(
+            prefixText: prefixText,
+            prefixStyle: AppText.body.copyWith(fontWeight: FontWeight.w700),
             hintText: hint,
             hintStyle: AppText.body.copyWith(color: AppColors.inkMuted),
             errorText: errorText,

@@ -17,7 +17,7 @@
 | [J1](jours/J01-setup.md) | lun 20/07 | | Monorepo, PostGIS en local (Docker), **squelette déployé sur le VPS** — et lancer le compte Wave | |
 | [J2](jours/J02-design-system.md) | mar 21/07 | 🎨 | Les tokens + les 9 composants du socle, dont **`TripCard`** | **OK** |
 | [J3](jours/J03-schema.md) | mer 22/07 | | Les 4 migrations avec les index GIST, les modèles Eloquent | **OK** |
-| [J4](jours/J04-auth.md) | jeu 23/07 | 🎨 | Auth téléphone de bout en bout — **tester 3 vrais numéros +221** | |
+| [J4](jours/J04-auth.md) | jeu 23/07 | 🎨 | Auth téléphone de bout en bout — **tester 3 vrais numéros +221** | **OK**¹ |
 | [J5](jours/J05-profil.md) | ven 24/07 | 🎨 | Profil complet avec photo, puis on s'arrête | |
 
 ## Semaine 2 — Le cœur
@@ -74,6 +74,8 @@
 2. **L'API avant l'app, toujours.** Testée au curl avant qu'un widget existe.
 3. **J10 et J15 sont tes seuls tampons.** N'y mets rien — ils vont servir.
 4. **Le week-end n'est pas du temps de dev.** C'est la règle que tu voudras casser en premier, et celle qui coûte le plus cher.
+
+¹ J4 : tout est validé sauf les SMS réels (plan Blaze requis) — voir DETTE.md, à payer avant le J18.
 
 **Si un jour déborde, ordre de sacrifice :** badges · profile_edit · welcome slides · trip_my_list (toggle seulement).
 **Ce qui ne se coupe jamais :** le matching (J8) et le durcissement (J18).

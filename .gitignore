@@ -4,3 +4,15 @@
 firebase-debug.log
 ui-debug.log
 build/
+
+# Secrets Firebase — ne JAMAIS committer
+# App (Android/iOS)
+**/google-services.json
+**/GoogleService-Info.plist
+app/lib/firebase_options.dart
+# API Laravel : la clé de compte de service qui vérifie les ID tokens
+api/storage/app/firebase/*.json
+**/firebase-service-account*.json
+# Env
+.env
+*.env

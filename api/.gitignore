@@ -22,3 +22,6 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Service account FACTICE pour l émulateur — jamais un vrai secret ici
+/storage/firebase-demo-credentials.json

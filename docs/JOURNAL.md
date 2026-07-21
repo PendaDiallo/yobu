@@ -218,6 +218,30 @@ Documenté dans `CLAUDE.md` (conventions app) et `docs/02-technique.md §10` (ex
 
 **Demain :** J4 — auth téléphone de bout en bout (créer le vrai projet Firebase avant de commencer).
 
+---
+
+### J4 — 21 juillet 2026 — Auth téléphone de bout en bout
+
+**Fait :**
+- POST /api/auth/firebase (kreait → Sanctum) + GET /api/me, badges dérivés. 13 tests verts.
+- Projet Firebase réel créé (`yobu-594f7`), `flutterfire configure`, service account sur l'API, SHA debug déclarées, région SMS SN activée. Un seul project id partout — l'émulateur aussi.
+- Écrans phone_auth + otp_verify : +221 verrouillé, OTP 6 cases, renvoi 60 s, erreurs en français. Parcours complet vérifié sur émulateur jusqu'à profile_setup, et app installée sur un vrai Galaxy A55.
+- Un vrai token signé yobu-594f7 vérifié par l'API contre les clés Google (e2e curl).
+- Bug corrigé : même téléphone + nouvel uid Firebase → re-liaison du compte au lieu d'un 500 (test ajouté).
+
+**Critère de fin atteint :** non sur un point — les 3 vrais numéros +221 attendent le plan Blaze (→ DETTE.md, à payer avant le J18).
+
+**Coupé / reporté :**
+- Test SMS réels : bloqué par BILLING_NOT_ENABLED. Sur vrai téléphone, les numéros de test console suffisent en attendant.
+
+**Ce que j'ai appris :**
+- **Le SMS phone-auth exige désormais le plan Blaze** (changement Firebase 2024) — l'hypothèse « Spark possible » du J0 est morte. Coût réel inchangé : ~0,06 $/SMS.
+- La politique « régions SMS » d'un nouveau projet est une allowlist VIDE : rien ne part tant que le pays n'est pas activé (erreur 17006).
+- Le plugin google-services auto-initialise Firebase [DEFAULT] : ne jamais ré-initialiser avec d'autres options ([core/duplicate-app]).
+- kreait exige des credentials même face à l'émulateur → service account factice (clé RSA jetable), hors git.
+
+**Demain :** J5 — profil complet avec photo.
+
 <!-- Nouvelles entrées AU-DESSUS de cette ligne, la plus récente en premier -->
 
 ---

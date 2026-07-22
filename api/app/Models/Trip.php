@@ -6,8 +6,10 @@ use App\Casts\PgArray;
 use Database\Factories\TripFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Le trajet RÉCURRENT du conducteur.
@@ -53,6 +55,21 @@ class Trip extends Model
             'days_of_week' => PgArray::class,
             'active' => 'boolean',
         ];
+    }
+
+    /**
+     * Ajoute origin_lat/lng et dest_lat/lng en clair — les colonnes
+     * geography reviennent en WKB inutilisable côté JSON.
+     */
+    public function scopeWithCoordinates(Builder $query): Builder
+    {
+        return $query->addSelect([
+            'trips.*',
+            DB::raw('ST_Y(origin_point::geometry) AS origin_lat'),
+            DB::raw('ST_X(origin_point::geometry) AS origin_lng'),
+            DB::raw('ST_Y(dest_point::geometry) AS dest_lat'),
+            DB::raw('ST_X(dest_point::geometry) AS dest_lng'),
+        ]);
     }
 
     public function driver(): BelongsTo

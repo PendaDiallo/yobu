@@ -260,6 +260,26 @@ Documenté dans `CLAUDE.md` (conventions app) et `docs/02-technique.md §10` (ex
 
 **Demain :** J6 — API publier un trajet + fourchette de prix. On ne prend PAS d'avance sur la S2 ce soir (règle de la fiche J5).
 
+---
+
+### J6 — 21 juillet 2026 — Publier un trajet (API)
+
+**Fait :**
+- POST/PATCH/DELETE /api/trips + /mine + TripPolicy. 29 tests verts.
+- Routes API appelée UNE fois à la création, polyline décodée à la main → LineString PostGIS + duration_minutes.
+- price-hint sans Google : ST_Distance × 1,3, 50 F/km, [400, 2000] — vérifié au curl : Keur Massar → Plateau = {840, 1200, 1680}.
+- DELETE → 409 si réservations (l'historique ne s'efface pas).
+
+**Critère de fin atteint :** oui — trajet en base, ST_AsText montre la ligne, price-hint répond sans Google.
+
+**Coupé / reporté :**
+- Sans clé Maps : repli ligne droite documenté (DETTE.md). La clé arrive avec la session facturation Google (avec Blaze), idéalement avant le J7.
+
+**Ce que j'ai appris :**
+- Deux tokens Sanctum dans un même test Feature : le guard cache le premier utilisateur → un scénario multi-acteurs = plusieurs tests.
+
+**Demain :** J7 — l'écran publier un trajet (< 3 min chrono). Il lui faut la clé Places → session facturation Google avant si possible.
+
 <!-- Nouvelles entrées AU-DESSUS de cette ligne, la plus récente en premier -->
 
 ---

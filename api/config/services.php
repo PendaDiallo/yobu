@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    'google_maps' => [
+        // Routes API uniquement, appelée UNE fois par trajet, à la création.
+        // Jamais à la recherche (docs/02-technique.md — on ne filtre pas avec
+        // une API payante).
+        'key' => env('GOOGLE_MAPS_API_KEY'),
+    ],
+
 ];

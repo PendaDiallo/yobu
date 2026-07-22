@@ -24,7 +24,7 @@
 
 | Jour | Date | 🎨 | À faire | Fait |
 |---|---|:---:|---|:---:|
-| [J6](jours/J06-trajet-api.md) | lun 27/07 | | API publier un trajet + la fourchette de prix | |
+| [J6](jours/J06-trajet-api.md) | lun 27/07 | | API publier un trajet + la fourchette de prix | **OK** |
 | [J7](jours/J07-trajet-app.md) | mar 28/07 | 🎨 | Écran publier un trajet — **moins de 3 min chrono** | |
 | [J8](jours/J08-matching.md) | mer 29/07 | | ⚠️ **LE MATCHING** — le jour qui décide du projet | |
 | [J9](jours/J09-recherche.md) | jeu 30/07 | 🎨 | Écrans recherche + résultats | |

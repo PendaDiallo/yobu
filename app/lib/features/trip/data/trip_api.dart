@@ -23,6 +23,13 @@ class TripApi {
     return response.data!;
   }
 
+  Future<List<Map<String, dynamic>>> search(Map<String, dynamic> body) async {
+    final response =
+        await _dio.post<Map<String, dynamic>>('/trips/search', data: body);
+
+    return (response.data!['data'] as List).cast<Map<String, dynamic>>();
+  }
+
   Future<Map<String, dynamic>> store(Map<String, dynamic> body) async {
     final response =
         await _dio.post<Map<String, dynamic>>('/trips', data: body);

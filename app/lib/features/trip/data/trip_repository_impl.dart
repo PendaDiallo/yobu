@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 
 import '../../../core/errors/app_exception.dart';
+import '../domain/match.dart';
 import '../domain/place.dart';
 import '../domain/price_hint.dart';
 import '../domain/trip.dart';
@@ -24,6 +25,29 @@ class TripRepositoryImpl implements TripRepository {
         destLat: destination.lat,
         destLng: destination.lng,
       ));
+    } catch (error) {
+      throw _translate(error);
+    }
+  }
+
+  @override
+  Future<List<Match>> search({
+    required Place origin,
+    required Place destination,
+    required String arrivalBefore,
+    required String date,
+  }) async {
+    try {
+      final rows = await _api.search({
+        'origin_lat': origin.lat,
+        'origin_lng': origin.lng,
+        'dest_lat': destination.lat,
+        'dest_lng': destination.lng,
+        'arrival_before': arrivalBefore,
+        'date': date,
+      });
+
+      return [for (final json in rows) Match.fromJson(json)];
     } catch (error) {
       throw _translate(error);
     }

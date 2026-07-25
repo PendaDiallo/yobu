@@ -320,6 +320,42 @@ Documenté dans `CLAUDE.md` (conventions app) et `docs/02-technique.md §10` (ex
 
 **Demain :** J9 — écrans recherche + résultats (TripCard entre en scène).
 
+### J9 — 25 juillet 2026 — Recherche + résultats (l'app parle enfin au matching)
+
+**Fait :**
+- Écrans `search` et `search_results` branchés sur POST /api/trips/search, via la feature `trip` en 3 couches (domain: match/place/price_hint/trip + interfaces · data: trip_api/impl/corridor_places · presentation: search_controller + écrans).
+- `search_results` gère les 3 états : chargement / résultats / vide (EmptyState).
+- `TripCard` affiche `seatsLeft` **reçu de l'API** — aucun calcul de places côté Flutter, la frontière tient.
+- Analytics `search_performed` avec `results_count` : le taux de match est désormais mesurable.
+- Vérifié au curl (après avoir corrigé une 500 d'auth — voir note du 25/07) : les trajets Keur Massar → Plateau remontent, triés par proximité. Ça marche de bout en bout, API → app.
+
+**Critère de fin atteint :** oui — recherche fonctionnelle depuis l'app, 3 états OK, event analytics qui remonte.
+
+**Ce que j'ai appris :**
+- La 500 « Route [login] not defined » = requête API non authentifiée traitée comme du web. Durci dans bootstrap/app.php (item J18 fait en avance).
+- Le piège du test curl : être déjà dans `api/` fait échouer `cd api &&` et vide le token silencieusement.
+
+**Reste à faire :** commit du J9 (pas encore fait au moment d'écrire), cocher J9 dans PLANNING.md.
+
+**Demain :** J10 — tampon. Rien à coder. Aller compter au point de rencontre de Keur Massar à 6h (stratégie §4).
+
+---
+
+### J9 — 25 juillet 2026 — Recherche + résultats (app)
+
+**Fait :**
+- Écrans search + search_results branchés sur POST /api/trips/search, 3 états (chargement, résultats, vide) vérifiés sur émulateur.
+- Entité Match : tout arrive pré-calculé (seats_left par date, arrival_time, score) — aucun calcul côté Flutter, la frontière API/app tient.
+- Toggle Aujourd'hui/Demain (les deux seuls jours d'un pendulaire), PlaceField réutilisé tel quel.
+- Analytics search_performed{results_count} : la source du taux de match.
+
+**Critère de fin atteint :** oui.
+
+**Ce que j'ai appris :**
+- La base de dev n'est pas un invariant : re-seed entre deux sessions = tokens app orphelins. Réflexe : re-login avant de conclure à un bug.
+
+**Demain :** J10 — TAMPON. N'y mets rien (règle 3 du planning).
+
 <!-- Nouvelles entrées AU-DESSUS de cette ligne, la plus récente en premier -->
 
 ---

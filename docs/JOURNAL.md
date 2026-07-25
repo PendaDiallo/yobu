@@ -42,6 +42,13 @@ jours/J[NN]-*.md. Fais le point sur ce qui est fait, puis attaque le jour.
 
 ## Entrées
 
+### Note technique — 25/07 — Durcissement API anticipé (item du J18 fait en avance)
+
+En testant le matching au curl, 500 « Route [login] not defined » : une requête `api/*`
+non authentifiée tentait un redirect web au lieu de renvoyer du JSON.
+**Corrigé dans `bootstrap/app.php`** : `shouldRenderJsonWhen(api/* || expectsJson)`.
+Désormais un token manquant → `401` propre. **→ à cocher comme déjà fait au J18.**
+
 ### J0 — 16 juillet 2026 — Conception + bascule de stack
 
 **Fait :**
@@ -279,6 +286,39 @@ Documenté dans `CLAUDE.md` (conventions app) et `docs/02-technique.md §10` (ex
 - Deux tokens Sanctum dans un même test Feature : le guard cache le premier utilisateur → un scénario multi-acteurs = plusieurs tests.
 
 **Demain :** J7 — l'écran publier un trajet (< 3 min chrono). Il lui faut la clé Places → session facturation Google avant si possible.
+
+---
+
+### J7 — 25 juillet 2026 — Publier un trajet (app)
+
+**Fait :**
+- PlaceField (design system) : suggestions + état sélectionné, source déléguée — liste de 15 lieux réels du corridor en attendant Places (DETTE facturation).
+- trip_create : tout au-dessus du pli, fourchette API affichée + appliquée en un tap, avertissement hors fourchette, time picker natif.
+- trip_my_list : toggle actif/inactif, suppression avec confirmation, EmptyState.
+- Analytics trip_published câblé.
+- e2e émulateur : publication → base → toggle → suppression, tout vérifié.
+
+**Critère de fin atteint :** parcours complet oui ; chrono < 3 min à faire téléphone en main ; trip_published à voir en DebugView.
+
+**Ce que j'ai appris :**
+- Un PlacesRepository par interface rend la liste en dur du corridor interchangeable avec Places Autocomplete — zéro écran à retoucher.
+
+---
+
+### J8 — 25 juillet 2026 — LE MATCHING
+
+**Fait :**
+- TripMatchingService : la requête PostGIS du §4 telle quelle (GIST, 50 candidats par proximité), score + top 10 en PHP. POST /api/trips/search.
+- Tests écrits AVANT le service, 14 cas dont les 7 exigés — verts du premier coup. 43 tests au total.
+- Vérifié sur les données du corridor : un passager de Keur Massar trouve 10 conducteurs, le meilleur à 154 m. L'hypothèse est testable.
+
+**Critère de fin atteint :** oui.
+
+**Ce que j'ai appris :**
+- La formule de score punit fort les arrivées très en avance (composante horaire négative) — voulu : elle privilégie l'arrivée PROCHE de l'heure demandée. À garder en tête en lisant les scores.
+- Les places par date fonctionnent comme prévu : une résa le mardi ne touche pas le lundi.
+
+**Demain :** J9 — écrans recherche + résultats (TripCard entre en scène).
 
 <!-- Nouvelles entrées AU-DESSUS de cette ligne, la plus récente en premier -->
 

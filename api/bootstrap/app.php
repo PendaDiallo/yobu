@@ -15,5 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Les routes API répondent TOUJOURS en JSON — jamais de redirect vers
+        // une page login inexistante. Un token manquant => 401 propre, pas 500.
+        $exceptions->shouldRenderJsonWhen(
+            fn ($request, $throwable) => $request->is('api/*') || $request->expectsJson(),
+        );
     })->create();

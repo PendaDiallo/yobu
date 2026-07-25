@@ -19,6 +19,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Les routes fixes avant le paramètre {trip}.
     Route::get('/trips/price-hint', [TripController::class, 'priceHint']);
     Route::get('/trips/mine', [TripController::class, 'mine']);
+    Route::post('/trips/search', [TripController::class, 'search']);
     Route::post('/trips', [TripController::class, 'store']);
     Route::patch('/trips/{trip}', [TripController::class, 'update']);
     Route::delete('/trips/{trip}', [TripController::class, 'destroy']);

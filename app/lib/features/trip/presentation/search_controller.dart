@@ -6,7 +6,7 @@ import '../domain/match.dart';
 import '../domain/place.dart';
 
 class SearchState {
-  const SearchState({this.results, this.summary = ''});
+  const SearchState({this.results, this.summary = '', this.date = ''});
 
   /// null tant qu'aucune recherche n'a été lancée.
   final AsyncValue<List<Match>>? results;
@@ -14,6 +14,9 @@ class SearchState {
   /// Ex. « Keur Massar, Unité 15 → Plateau · avant 08:00 » — pour l'entête
   /// de search_results.
   final String summary;
+
+  /// La date cherchée (Y-m-d) — trip_detail en a besoin pour la demande.
+  final String date;
 }
 
 class SearchController extends Notifier<SearchState> {
@@ -28,7 +31,11 @@ class SearchController extends Notifier<SearchState> {
   }) async {
     final summary =
         '${origin.label} → ${destination.label} · avant $arrivalBefore';
-    state = SearchState(results: const AsyncLoading(), summary: summary);
+    state = SearchState(
+      results: const AsyncLoading(),
+      summary: summary,
+      date: date,
+    );
 
     try {
       final matches = await ref.read(tripRepositoryProvider).search(
@@ -45,11 +52,16 @@ class SearchController extends Notifier<SearchState> {
         parameters: {'results_count': matches.length},
       );
 
-      state = SearchState(results: AsyncData(matches), summary: summary);
+      state = SearchState(
+        results: AsyncData(matches),
+        summary: summary,
+        date: date,
+      );
     } on AppException catch (exception, stackTrace) {
       state = SearchState(
         results: AsyncError(exception, stackTrace),
         summary: summary,
+        date: date,
       );
     }
   }

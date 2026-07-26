@@ -356,6 +356,23 @@ Documenté dans `CLAUDE.md` (conventions app) et `docs/02-technique.md §10` (ex
 
 **Demain :** J10 — TAMPON. N'y mets rien (règle 3 du planning).
 
+---
+
+### J11 — 26 juillet 2026 — Réservation : demande → acceptation → places
+
+**Fait :**
+- API bookings complète : POST (pending, prix figé), GET /bookings + /received, PATCH avec transitions verrouillées. Acceptation = §5 au pseudo-code près (transaction + lockForUpdate), 409 « déjà complet ».
+- Le téléphone n'apparaît dans le JSON qu'une fois accepté — la règle WhatsApp est dans la Resource, pas dans l'UI. 57 tests verts.
+- WhatsAppButton + RouteMap (schéma sans SDK Maps, interface stable), trip_detail (Match passé par navigation), trip_requests.
+- e2e des deux rôles vérifié sur émulateur, analytics booking_requested / booking_accepted câblés.
+
+**Critère de fin atteint :** oui — la boucle produit complète existe : publier → chercher → demander → accepter → WhatsApp.
+
+**Ce que j'ai appris :**
+- La règle « le numéro n'apparaît qu'après acceptation » se place côté Resource API : l'app ne peut pas fuiter ce qu'elle ne reçoit pas.
+
+**Demain :** J12 — notifications push (FCM). Le vrai projet Firebase est prêt ; le rappel de 5h30 (J13) voudra le VPS.
+
 <!-- Nouvelles entrées AU-DESSUS de cette ligne, la plus récente en premier -->
 
 ---

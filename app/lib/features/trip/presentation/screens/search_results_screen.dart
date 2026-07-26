@@ -8,6 +8,7 @@ import '../../../../shared/widgets/empty_state.dart';
 import '../../../../shared/widgets/trip_card.dart';
 import '../../domain/match.dart';
 import '../search_controller.dart';
+import 'trip_detail_screen.dart';
 
 class SearchResultsScreen extends ConsumerWidget {
   const SearchResultsScreen({super.key});
@@ -49,6 +50,7 @@ class SearchResultsScreen extends ConsumerWidget {
                     : _ResultsList(
                         matches: matches,
                         summary: search.summary,
+                        date: search.date,
                       ),
               ),
       ),
@@ -57,10 +59,15 @@ class SearchResultsScreen extends ConsumerWidget {
 }
 
 class _ResultsList extends StatelessWidget {
-  const _ResultsList({required this.matches, required this.summary});
+  const _ResultsList({
+    required this.matches,
+    required this.summary,
+    required this.date,
+  });
 
   final List<Match> matches;
   final String summary;
+  final String date;
 
   String _priceLabel(int price) {
     final digits = price.toString();
@@ -124,6 +131,7 @@ class _ResultsList extends StatelessWidget {
           onTap: () => context.pushNamed(
             AppRoute.tripDetail,
             pathParameters: {'id': '${trip.id}'},
+            extra: TripDetailArgs(match: match, date: date),
           ),
         );
       },

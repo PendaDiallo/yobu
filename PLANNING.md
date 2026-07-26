@@ -34,7 +34,7 @@
 
 | Jour | Date | 🎨 | À faire | Fait |
 |---|---|:---:|---|:---:|
-| [J11](jours/J11-reservation.md) | lun 03/08 | 🎨 | Réservation : demande → acceptation → places | |
+| [J11](jours/J11-reservation.md) | lun 03/08 | 🎨 | Réservation : demande → acceptation → places | **OK** |
 | [J12](jours/J12-push.md) | mar 04/08 | | Notifications push | |
 | [J13](jours/J13-bookings-home.md) | mer 05/08 | 🎨 | Mes réservations, home, et le rappel de 5h30 | |
 | [J14](jours/J14-notation.md) | jeu 06/08 | 🎨 | Notation + badges dérivés | |

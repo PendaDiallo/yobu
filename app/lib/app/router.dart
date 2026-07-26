@@ -6,6 +6,7 @@ import '../features/auth/presentation/screens/phone_auth_screen.dart';
 import '../features/auth/presentation/screens/splash_screen.dart';
 import '../features/auth/presentation/screens/welcome_screen.dart';
 import '../features/booking/presentation/screens/bookings_screen.dart';
+import '../features/booking/presentation/screens/trip_requests_screen.dart';
 import '../features/home/presentation/screens/home_screen.dart';
 import '../features/profile/presentation/screens/profile_edit_screen.dart';
 import '../features/profile/presentation/screens/profile_setup_screen.dart';
@@ -16,7 +17,6 @@ import '../features/trip/presentation/screens/search_screen.dart';
 import '../features/trip/presentation/screens/trip_create_screen.dart';
 import '../features/trip/presentation/screens/trip_detail_screen.dart';
 import '../features/trip/presentation/screens/trip_my_list_screen.dart';
-import '../features/trip/presentation/screens/trip_requests_screen.dart';
 
 /// Les noms des 16 écrans de docs/01-produit.md §3. On navigue par nom
 /// (context.goNamed), jamais par chemin en dur.
@@ -111,8 +111,10 @@ final router = GoRouter(
     GoRoute(
       path: '/trips/:id',
       name: AppRoute.tripDetail,
-      builder: (context, state) =>
-          TripDetailScreen(tripId: state.pathParameters['id']!),
+      builder: (context, state) => TripDetailScreen(
+        tripId: state.pathParameters['id']!,
+        args: state.extra as TripDetailArgs?,
+      ),
     ),
     // Commun
     GoRoute(

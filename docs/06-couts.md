@@ -54,7 +54,9 @@ Tu n'utilises plus que deux choses :
 - **Cloud Messaging** (push) → **gratuit, illimité**
 - **Analytics / Crashlytics** → **gratuit, illimité**
 
-Plus de Firestore, plus de Cloud Functions, plus de Storage. **Tu peux rester sur le plan Spark (gratuit)** — le plan Blaze n'était obligatoire que pour les Cloud Functions. Ta carte n'est plus exposée.
+Plus de Firestore, plus de Cloud Functions, plus de Storage.
+
+> ⚠️ **Correction du 21/07 — le plan Spark ne suffit plus.** Firebase exige le **plan Blaze** pour l'auth téléphone depuis un changement 2024 (`BILLING_NOT_ENABLED` sans carte). L'hypothèse « on reste sur Spark » du J0 est morte. Le coût réel ne bouge pas — Blaze reste au paiement à l'usage, ~0,06 $/SMS, et une **alerte budget à 10 $** plafonne la casse. Mais la carte est de nouveau exposée, et c'est un prérequis au J18 (cf `DETTE.md`, lignes du 21/07). FCM, Analytics et Crashlytics restent gratuits et illimités.
 
 ## Le budget honnête du projet
 

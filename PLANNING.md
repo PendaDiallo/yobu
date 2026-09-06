@@ -56,9 +56,9 @@
 
 | Quand | Quoi | Fait |
 |---|---|:---:|
-| J1 | **Commander le VPS** (5-10 €/mois, Paris ou Francfort) | |
+| J1 | **Commander le VPS** (5-10 €/mois, Paris ou Francfort) | **OK** (06/09 — OVH `51.91.100.103`, squelette déployé, cf `docs/07-deploiement.md`) |
 | J1 | Compte marchand Wave Business + PayDunya lancés | |
-| J1 | Alerte budget 10 $ + backups Postgres | |
+| J1 | Alerte budget 10 $ + backups Postgres | backups **OK** (cron quotidien `pg_dump`) · alerte budget Google : à faire |
 | Semaine 1 | Appeler Wave : « API marchande directe, oui ou non ? » | |
 | ~~Avant le J20~~ | ~~Choisir la zone~~ → **Keur Massar → Plateau** | **OK** |
 | Avant la phase 0 | **Repérer le point de rencontre exact** ⚠️ | |

@@ -373,6 +373,28 @@ Documenté dans `CLAUDE.md` (conventions app) et `docs/02-technique.md §10` (ex
 
 **Demain :** J12 — notifications push (FCM). Le vrai projet Firebase est prêt ; le rappel de 5h30 (J13) voudra le VPS.
 
+---
+
+### 06/09 — Squelette déployé sur le VPS (J1 rattrapé) + revue doc
+
+**Fait :**
+- Revue complète de `docs/` : 5 corrections (Laravel 11→12 dans roadmap + schéma §1, Spark→Blaze dans `06-couts`, borne horaire du matching dans §4, `/api/health` vs `/up` dans §6) et création de `docs/07-deploiement.md` — le trou signalé : `02-technique §8` s'arrêtait sur « tu sais faire ».
+- VPS OVH `51.91.100.103` (Ubuntu 24.04, 2 vCPU / 3,7 Go). Stack native, aucun PPA : PHP 8.3.6-fpm, PostgreSQL 16.15 + PostGIS 3.4, Caddy 2.11.4, Composer 2.10.3. Swap 2 Go, ufw (SSH/80/443).
+- Base `yobu` + rôle non-superuser ; `CREATE EXTENSION postgis` lancé en `postgres` (l'impossible d'O2switch). Mot de passe DB généré sur la machine (`/root/yobu_db_pass`), jamais dans un chat.
+- Code déployé via deploy key GitHub, `.env` prod + `APP_KEY`, `service-account.json` (hors git), 7 migrations passées, caches générés.
+- Caddy `:80` → PHP-FPM. `GET /api/health` répond `{"ok":true,"postgis":"3.4 …"}` **en externe**.
+- `yobu-queue.service` (systemd, driver `database`, logs journald) `active` + `enabled`.
+- Backup `pg_dump -Fc` quotidien en cron, 1er dump vérifié (65 K). Les 4 services `enabled` → reboot-safe.
+
+**Critère de fin atteint :** oui — le squelette répond en ligne, jalon J1 de `02-technique §8`. Restent : scheduler 5h30 au J13 (aucune commande planifiée n'existe encore), test e2e app→prod au J12.
+
+**Ce que j'ai appris :**
+- Le `caddy.service` du paquet Ubuntu est sandboxé (`ProtectSystem`) : impossible d'y écrire un fichier de log, même avec un drop-in `LogsDirectory`. Logs Caddy **et** queue → journald, point final.
+- OVH livre un user `ubuntu` sudo, pas de root SSH. On garde `ubuntu` comme user unique (admin + runtime) : la séparation admin/runtime est du boilerplate sans 2ᵉ intervenant (`02-technique §10`). Noté en dette, avec la clé de déploiement à reconfirmer en *Deploy key* repo-scoppée.
+- Ubuntu 24.04 = PHP 8.3 + PostgreSQL 16 natifs : la dette « vérifier le VPS en 8.3 » tombe.
+
+**Demain :** J12 — pointer l'émulateur sur `http://51.91.100.103`, test end-to-end des notifications push (réservation → job FCM → notif app fermée), puis commit du J12.
+
 <!-- Nouvelles entrées AU-DESSUS de cette ligne, la plus récente en premier -->
 
 ---

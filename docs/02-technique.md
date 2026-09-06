@@ -12,7 +12,7 @@
         │ Bearer <token Sanctum>
         ▼
 ┌─────────────────────────────┐
-│  API Laravel 11 (VPS)       │
+│  API Laravel 12 (VPS)       │
 │    Controllers → Services   │   TOUTE la logique est ici
 │         │                   │
 │    PostgreSQL 16 + PostGIS  │
@@ -153,6 +153,8 @@ LIMIT 50;
 
 > **Le SQL sort 50 candidats bruts, triés par proximité. Il ne trie pas par score** — le score n'existe pas en base, il dépend d'une normalisation du prix sur l'ensemble des résultats. Si tu vois `ORDER BY score` dans une requête, c'est faux.
 
+> **Le filtre horaire ne borne que le retard**, pas l'avance : `arrivée ≤ arrival_before + 20 min`. Un trajet qui arrive 90 min trop tôt passe le filtre — c'est voulu, la composante horaire du score (`0.3 × (1 − |Δ|/20)`) devient franchement négative et le relègue en fin de liste. Pas de borne basse en SQL : le score s'en charge. La constante côté service s'appelle `LATE_TOLERANCE_MIN` pour cette raison.
+
 **Le score, puis le top 10, en PHP** sur les ≤ 50 lignes :
 ```
 score = 0.4 × (1 - pickup_distance_m / 1500)
@@ -236,6 +238,7 @@ DB::transaction(function () use ($booking) {
 Tout est sous `auth:sanctum` sauf le premier.
 
 ```
+GET    /api/health                 → { ok, postgis } | 503   — le check qui fait foi
 POST   /api/auth/firebase          { id_token } → { token, user }
 
 GET    /api/me
@@ -259,6 +262,8 @@ PATCH  /api/bookings/{booking}      { status: accepted|rejected|cancelled }
 
 POST   /api/ratings                 { booking_id, score, tags, comment }
 ```
+
+> **Deux endpoints de santé, un seul fait foi.** `GET /api/health` (`HealthController`) est le check du monitoring et du déploiement : il exécute `PostGIS_Version()` et renvoie `503` si la base ou l'extension manque — c'est celui que la roadmap et le `07-deploiement.md` utilisent. `GET /up` existe aussi (défaut Laravel, câblé dans `bootstrap/app.php`) mais il ne teste que le boot du framework, pas la base — ne le branche sur rien.
 
 **Les autorisations passent par des Policies**, pas par des `if` dans les contrôleurs :
 - `TripPolicy::update/delete` → seulement `driver_id`
@@ -304,6 +309,10 @@ Ce que j'ai trouvé (juillet 2026), **à vérifier toi-même avant de coder** :
 - Laravel Forge (12 $/mois) si tu veux zéro friction, ou déploiement manuel + Caddy. **Tu sais faire — ne me laisse pas te réexpliquer.**
 - **Backups Postgres quotidiens dès le J1.** Automatiques, et **restaurés pour de vrai au J18**. Un backup jamais testé n'est pas un backup.
 - Sentry pour les erreurs API (gratuit à ton volume).
+
+> **Le runbook de déploiement est dans [`07-deploiement.md`](07-deploiement.md)** :
+> provisioning OVH, stack Ubuntu 24.04 / PHP 8.3 / PostGIS, Caddy, worker de queue
+> en systemd, scheduler du J13, backups. Ce paragraphe dit *quoi* ; le 07 dit *comment*.
 
 ### Le dev local — c'est là que tu passes tes journées
 

@@ -38,10 +38,10 @@ En pratique, la plupart des jours sont soit « API », soit « app ». Les deux 
 > À la fin : l'API tourne en ligne, tu te connectes depuis l'app avec ton vrai numéro, ton profil existe, et c'est beau.
 
 **J1 (lun 20) — Le squelette + admin**
-- Monorepo, Laravel 11, Postgres 16 + PostGIS, VPS, déploiement, Flutter.
+- Monorepo, Laravel 12, Postgres 16 + PostGIS, VPS, déploiement, Flutter.
 - **Hors code, 30 min, à faire AVANT tout :** lancer la demande de compte marchand Wave Business + inscription PayDunya. Appeler Wave pour trancher « API marchande directe : oui/non ? ». Ça tourne en fond 6 semaines.
 ```
-Initialise le monorepo YOBU selon l'arborescence de CLAUDE.md : api/ (Laravel 11,
+Initialise le monorepo YOBU selon l'arborescence de CLAUDE.md : api/ (Laravel 12,
 PHP 8.3) et app/ (Flutter 3).
 API : Postgres 16 + PostGIS (extension activée), Sanctum, kreait/laravel-firebase,
 Model::preventLazyLoading() en local. Un endpoint /api/health.

@@ -405,14 +405,20 @@ Documenté dans `CLAUDE.md` (conventions app) et `docs/02-technique.md §10` (ex
 - **App** : `AuthController` repousse le token FCM à l'entrée dans l'état connecté (`init()` tourne avant qu'une session Sanctum existe → l'envoi initial est perdu au tout premier login).
 - **Test e2e sur émulateur** : `docker compose` + `artisan serve` + `queue:work` + émulateur Firebase Auth. Login OTP via l'émulateur → publier → chercher → réserver, toutes les requêtes passent (connexion émulateur ↔ API validée). Push FCM réel reçu sur l'émulateur `yobu_pixel` (image Google Play), app en arrière-plan. **Piège rencontré et noté** : une app `am force-stop` ne reçoit plus FCM (état "stopped" Android) — le vrai « app fermée » = swipe utilisateur, pas force-stop.
 
-**Critère de fin atteint :** partiellement. Notif reçue sur l'émulateur (pas encore sur un vrai téléphone, USB indispo aujourd'hui) ; job traité dans `queue:work` ; deep link au tap câblé. La queue en supervisor tourne déjà sur le VPS (`yobu-queue.service`, fait le 06/09).
+**Critère de fin atteint :** oui, vérifié bout en bout sur un **vrai téléphone** (Samsung Galaxy A55) le 09/09 : auth réelle (numéro de test console Firebase → token signé → `POST /api/auth/firebase` → kreait → User), notif reçue **app en arrière-plan**, tap → écran `trip_requests` avec la bonne demande, job traité dans `queue:work`. La queue en supervisor tourne déjà sur le VPS (`yobu-queue.service`, fait le 06/09).
 
 **Ce que j'ai appris :**
 - L'émulateur `yobu_pixel` (Google Play) **reçoit FCM sans compte Google connecté** une fois le checkin Play Services fait — le `FcmRetry` initial après un `pm clear` est transitoire.
 - `am force-stop` ≠ « app fermée » pour tester FCM : Android exclut les packages *stopped* des broadcasts. Tester en swipant depuis les récents, ou app en arrière-plan.
 - `phpunit.xml` en `QUEUE_CONNECTION=sync` : les tests booking exécutent le job. Ça passe parce que `fcm_token` est `null` en factory — fragile, noté dans `DETTE.md`.
 
-**Reste :** confirmer sur un vrai téléphone Android (5 min, une fois). `.transfer/api.tar.gz` (résidu du transfert VPS) ajouté à `.gitignore`.
+**Ce que le test vrai téléphone a appris (09/09) :**
+- **`useAuthEmulator` est inutilisable sur un vrai appareil** : le plugin `firebase_auth` remappe en dur `127.0.0.1`/`localhost` → `10.0.2.2` sur Android. Sur téléphone, `10.0.2.2` ne mène nulle part. Pour tester sur device : auth Firebase réelle + numéro de test console (code fixe, sans SMS, sans Blaze).
+- **`adb reverse tcp:8000` / `tcp:9099`** tunnelise l'API + l'émulateur par le câble USB — la seule option quand le WiFi du bureau isole les appareils entre eux (`No route to host` en LAN).
+- L'auth téléphone réelle sur device passe par **Play Integrity** (~60 s de latence au premier `verifyPhoneNumber`, pas un blocage). reCAPTCHA Enterprise non configuré → fallback Integrity, qui marche.
+- **Icône de notif = l'icône Flutter par défaut** (pas de monochrome `ic_notification`). Cosmétique → J17, noté dans `DETTE.md`.
+
+**Reste :** `.transfer/api.tar.gz` (résidu du transfert VPS) ajouté à `.gitignore`.
 
 **Demain :** J13 — mes réservations, home, et le rappel de 5h30 (le scheduler côté VPS est à câbler, cf `07-deploiement.md §9`).
 

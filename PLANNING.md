@@ -77,7 +77,7 @@
 
 ¹ J4 : tout est validé sauf les SMS réels (plan Blaze requis) — voir DETTE.md, à payer avant le J18.
 
-² J12 : notif reçue sur émulateur + job traité + deep link câblé. Reste la confirmation sur un vrai téléphone Android (5 min). Queue en service sur le VPS depuis le 06/09.
+² J12 : vérifié bout en bout sur un **vrai téléphone** (Galaxy A55, 09/09) — auth réelle (numéro de test Firebase), notif reçue app en arrière-plan, tap → `trip_requests`, job traité. Queue en service sur le VPS depuis le 06/09.
 
 **Si un jour déborde, ordre de sacrifice :** badges · profile_edit · welcome slides · trip_my_list (toggle seulement).
 **Ce qui ne se coupe jamais :** le matching (J8) et le durcissement (J18).

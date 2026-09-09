@@ -12,6 +12,10 @@ abstract class Booking with _$Booking {
     required int id,
     required String date,
     required String status,
+
+    /// « À venir » — calculé par l'API. L'app groupe dessus, elle ne
+    /// compare aucune date elle-même.
+    required bool upcoming,
     required int seats,
     required int pricePaid,
     required BookingTrip trip,

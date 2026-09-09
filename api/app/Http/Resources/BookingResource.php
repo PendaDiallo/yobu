@@ -6,6 +6,7 @@ use App\Models\Booking;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
 /**
  * @mixin Booking
@@ -27,6 +28,10 @@ class BookingResource extends JsonResource
             'id' => $this->id,
             'date' => $this->date->format('Y-m-d'),
             'status' => $this->status,
+            // « à venir » = pas encore passé ET pas clôturé/refusé/annulé.
+            // Calculé ici : l'app groupe sans comparer de dates elle-même.
+            'upcoming' => in_array($this->status, ['pending', 'accepted'], true)
+                && $this->date->toDateString() >= Carbon::now('Africa/Dakar')->toDateString(),
             'seats' => $this->seats,
             'price_paid' => $this->price_paid,
             'trip' => [

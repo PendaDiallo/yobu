@@ -175,6 +175,22 @@ class BookingTest extends TestCase
             ->assertJsonPath('data.0.trip.id', $booking->trip_id);
     }
 
+    public function test_index_flags_bookings_as_upcoming_or_past(): void
+    {
+        $rider = User::factory()->create();
+        $trip = Trip::factory()->create();
+
+        $future = Booking::factory()->accepted()->for($trip)->for($rider, 'rider')
+            ->create(['date' => now('Africa/Dakar')->addWeek()->toDateString()]);
+        $past = Booking::factory()->completed()->for($trip)->for($rider, 'rider')->create();
+
+        $response = $this->getJson('/api/bookings', $this->authed($rider))->assertOk();
+
+        $byId = collect($response->json('data'))->keyBy('id');
+        $this->assertTrue($byId[$future->id]['upcoming']);
+        $this->assertFalse($byId[$past->id]['upcoming']);
+    }
+
     public function test_received_returns_requests_on_my_trips_pending_first(): void
     {
         $trip = Trip::factory()->create();

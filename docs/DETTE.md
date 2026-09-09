@@ -6,6 +6,7 @@
 
 | Date | Quoi | Pourquoi on l'assume | Quand on paie |
 |---|---|---|---|
+| 09/09 | **`/api/home` (rôle conducteur) montre le trajet du jour même après l'heure de départ** | `HomeService::nextOccurrence` calcule la prochaine date sur `days_of_week` sans regarder l'heure — à 9h le conducteur voit encore « aujourd'hui · 06:45 ». L'info n'est pas fausse (trajet récurrent), juste pas idéale. | J17 (finition) : sauter aujourd'hui si `now > departure_time`. |
 | 16/07 | **Pas de chat intégré → WhatsApp** | Reverb = 3-4 j. **C'est ce troc qui finance la bascule Laravel.** Les gens sont déjà sur WhatsApp. | seulement s'ils le réclament |
 | 16/07 | iOS non supporté | 99 $/an + certificats, marché sur Android | quand un user le demande |
 | 16/07 | Paiement en cash | Ne teste pas l'hypothèse, coûte 1 semaine | V1.1 (S7-S8) |

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Jobs\SendPushNotification;
 use App\Models\Booking;
+use App\Models\Trip;
 
 class FcmService
 {
@@ -52,6 +53,46 @@ class FcmService
                 'type'       => $type,
                 'booking_id' => (string) $booking->id,
             ],
+        );
+    }
+
+    /** Passager : rappel le matin même, le jour du trajet. */
+    public function notifyMorningRider(Booking $booking): void
+    {
+        $booking->loadMissing('rider', 'trip.driver');
+        $trip = $booking->trip;
+
+        SendPushNotification::dispatch(
+            $booking->rider,
+            'Ton trajet ce matin',
+            sprintf(
+                '%s → %s, départ %s. Retrouve %s.',
+                $trip->origin_label,
+                $trip->dest_label,
+                substr($trip->departure_time, 0, 5),
+                $trip->driver->first_name,
+            ),
+            ['type' => 'morning_reminder'],
+        );
+    }
+
+    /** Conducteur : rappel le matin même, avec le nombre de passagers. */
+    public function notifyMorningDriver(Trip $trip, int $passengers): void
+    {
+        $trip->loadMissing('driver');
+
+        SendPushNotification::dispatch(
+            $trip->driver,
+            'Tes passagers ce matin',
+            sprintf(
+                '%d passager%s sur %s → %s, départ %s.',
+                $passengers,
+                $passengers > 1 ? 's' : '',
+                $trip->origin_label,
+                $trip->dest_label,
+                substr($trip->departure_time, 0, 5),
+            ),
+            ['type' => 'morning_reminder'],
         );
     }
 }

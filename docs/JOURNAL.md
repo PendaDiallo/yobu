@@ -422,6 +422,30 @@ Documenté dans `CLAUDE.md` (conventions app) et `docs/02-technique.md §10` (ex
 
 **Demain :** J13 — mes réservations, home, et le rappel de 5h30 (le scheduler côté VPS est à câbler, cf `07-deploiement.md §9`).
 
+---
+
+### J13 — 09/09 — Mes réservations, home, le cron
+
+**Fait :**
+- **API — 2 commandes Artisan** : `app:daily-reminders` (rappel du matin, planifié `dailyAt('05:30')->timezone('Africa/Dakar')` dans `routes/console.php`) — 1 push par passager accepté du jour, 1 par conducteur ayant ≥1 passager. `app:complete-past-rides` (planifié `everyThirtyMinutes()`) — les bookings `accepted` passent en `completed` 2 h après l'heure de départ, dans une transaction ; `trips_completed` monte : +1 par booking pour le passager, +1 par couple (trajet, date) pour le conducteur.
+- **API — `FcmService`** : + `notifyMorningRider` / `notifyMorningDriver` (wording centralisé, `data.type = 'morning_reminder'`).
+- **API — `BookingResource`** : + champ `upcoming` (bool), calculé serveur (`status ∈ {pending,accepted}` ET `date ≥ aujourd'hui`). L'app groupe « à venir / passées » sans comparer de date.
+- **API — `GET /api/home`** (`HomeController` + `HomeService`) : renvoie `{ next }` — le plus tôt entre la prochaine réservation acceptée (rôle passager) et la prochaine occurrence d'un trajet actif (rôle conducteur, avec `seats_taken`/`seats_total`). Pas de Policy : la route est `auth:sanctum` et le service ne requête que `$user->id`, comme `/api/me`.
+- **App — feature `home`** (domain/data/presentation complètes) : `HomeSummary`/`NextRide`, `home_controller`, `home_screen` = carte « Prochain trajet » (ou `Rien de prévu`) + 3 actions rapides (Chercher / Publier / Mes réservations). Provider dans `app/di.dart`.
+- **App — `bookings_screen`** : `my_bookings_controller`, sections **À venir / Passées** (split sur `upcoming`), carte par réservation, `WhatsAppButton` si `accepted`, bouton **Annuler** si `upcoming` → `respond(id, 'cancelled')`. `booking.dart` : + `bool upcoming`.
+- **Tests** : `DailyRemindersTest`, `CompletePastRidesTest`, `HomeTest`, + `upcoming` dans `BookingTest`. **69 tests verts** (207 assertions).
+- **Vérifié bout en bout sur l'émulateur** (auth émulateur Firebase + `artisan serve` + `queue:work`) : login OTP → `/home` affiche le prochain trajet (conducteur, 0/3) → `/bookings` montre À venir (Acceptée + WhatsApp + Annuler) et Passées (Terminée) → « Annuler » repasse la carte en Annulée et la fait sauter de section. `flutter analyze` clean.
+
+**Critère de fin atteint :** API oui. Le rappel de 5h30 et sa vérif crontab restent à faire **sur le VPS** (`git pull` + la ligne cron, cf `07-deploiement.md §9`) — pas testable en local puisque la machine dort la nuit.
+
+**Ce que j'ai appris :**
+- `useAuthEmulator` reste inutilisable sur device (remap `10.0.2.2`, cf 09/09-J12), et l'auth Firebase **réelle sur émulateur** échoue aussi : Play Integrity `CANNOT_BIND_TO_SERVICE` (Play Store trop vieux) → fallback reCAPTCHA qui hang. Le seul flux OTP fiable en local = **émulateur Firebase Auth + émulateur Android**. Sur vrai device = **auth réelle + numéro de test console**.
+- Le champ `upcoming` calculé serveur suffit à faire tout le tri de l'écran bookings, y compris le re-groupement après annulation — l'app ne compare jamais une date.
+
+**Reste :** VPS (crontab §9). Dette ajoutée : `/api/home` conducteur montre le trajet du jour même après l'heure de départ → J17.
+
+**Demain :** J14 — notation + badges dérivés.
+
 <!-- Nouvelles entrées AU-DESSUS de cette ligne, la plus récente en premier -->
 
 ---

@@ -35,7 +35,7 @@
 | Jour | Date | 🎨 | À faire | Fait |
 |---|---|:---:|---|:---:|
 | [J11](jours/J11-reservation.md) | lun 03/08 | 🎨 | Réservation : demande → acceptation → places | **OK** |
-| [J12](jours/J12-push.md) | mar 04/08 | | Notifications push | |
+| [J12](jours/J12-push.md) | mar 04/08 | | Notifications push | **OK**² |
 | [J13](jours/J13-bookings-home.md) | mer 05/08 | 🎨 | Mes réservations, home, et le rappel de 5h30 | |
 | [J14](jours/J14-notation.md) | jeu 06/08 | 🎨 | Notation + badges dérivés | |
 | [J15](jours/J15-tampon.md) | ven 07/08 | | 🛡️ **Tampon n°2 — n'y mets rien** | |
@@ -76,6 +76,8 @@
 4. **Le week-end n'est pas du temps de dev.** C'est la règle que tu voudras casser en premier, et celle qui coûte le plus cher.
 
 ¹ J4 : tout est validé sauf les SMS réels (plan Blaze requis) — voir DETTE.md, à payer avant le J18.
+
+² J12 : notif reçue sur émulateur + job traité + deep link câblé. Reste la confirmation sur un vrai téléphone Android (5 min). Queue en service sur le VPS depuis le 06/09.
 
 **Si un jour déborde, ordre de sacrifice :** badges · profile_edit · welcome slides · trip_my_list (toggle seulement).
 **Ce qui ne se coupe jamais :** le matching (J8) et le durcissement (J18).

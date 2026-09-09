@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'debug/debug_gallery_screen.dart';
@@ -17,6 +18,8 @@ import '../features/trip/presentation/screens/search_screen.dart';
 import '../features/trip/presentation/screens/trip_create_screen.dart';
 import '../features/trip/presentation/screens/trip_detail_screen.dart';
 import '../features/trip/presentation/screens/trip_my_list_screen.dart';
+
+final navigatorKey = GlobalKey<NavigatorState>();
 
 /// Les noms des 16 écrans de docs/01-produit.md §3. On navigue par nom
 /// (context.goNamed), jamais par chemin en dur.
@@ -40,6 +43,7 @@ abstract final class AppRoute {
 }
 
 final router = GoRouter(
+  navigatorKey: navigatorKey,
   // Dev : `--dart-define=INITIAL_ROUTE=/debug` ouvre l'app sur une route donnée.
   initialLocation:
       const String.fromEnvironment('INITIAL_ROUTE', defaultValue: '/'),

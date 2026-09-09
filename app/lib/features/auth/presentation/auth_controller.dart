@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/di.dart';
 import '../../../core/errors/app_exception.dart';
+import '../../../core/services/notification_service.dart';
 import '../../profile/domain/user.dart';
 import '../domain/auth_repository.dart';
 
@@ -56,6 +57,7 @@ class AuthController extends Notifier<AuthFlowState> {
             user: user,
           ),
       };
+      if (state.step == AuthStep.authenticated) _pushFcmToken();
     } on AppException catch (exception) {
       state = AuthFlowState(
         step: state.step,
@@ -83,6 +85,7 @@ class AuthController extends Notifier<AuthFlowState> {
         phone: phone,
         user: user,
       );
+      _pushFcmToken();
     } on AppException catch (exception) {
       state = AuthFlowState(
         step: AuthStep.codeSent,
@@ -91,6 +94,14 @@ class AuthController extends Notifier<AuthFlowState> {
         error: exception.message,
       );
     }
+  }
+
+  /// À l'entrée dans l'état connecté : `NotificationService.init()` a tourné
+  /// au démarrage, avant qu'une session Sanctum existe — l'envoi initial du
+  /// token FCM y a été perdu. On le repousse maintenant. Fire-and-forget :
+  /// un échec réseau se rattrape au prochain démarrage ou `onTokenRefresh`.
+  void _pushFcmToken() {
+    ref.read(notificationServiceProvider).registerToken();
   }
 }
 

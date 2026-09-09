@@ -395,6 +395,27 @@ Documenté dans `CLAUDE.md` (conventions app) et `docs/02-technique.md §10` (ex
 
 **Demain :** J12 — pointer l'émulateur sur `http://51.91.100.103`, test end-to-end des notifications push (réservation → job FCM → notif app fermée), puis commit du J12.
 
+---
+
+### J12 — 09/09 — Notifications push (FCM)
+
+**Fait :**
+- **API** : `FcmService` (envoi sur demande reçue / acceptée / refusée) → `SendPushNotification`, job en queue `database`, `tries=3`. `handle()` sort tôt si pas de `fcm_token` ; `failed()` efface le token sur `INVALID_ARGUMENT`/`NOT_FOUND`. Hooks fins dans `BookingController::store` et `::update` (le contrôleur reste : valide → service → resource). Message avec bloc `notification` (barre système gérée par Android) + `data` (`type`, `booking_id`) + `AndroidConfig` priority high.
+- **App** : `NotificationService` (core/services) — permission Android 13+, envoi du token à `POST /api/me/fcm-token` au démarrage **et** `onTokenRefresh`, SnackBar en foreground, deep link au tap (`onMessageOpenedApp` + `getInitialMessage`) vers `trip_requests` / `bookings` selon `data['type']`, avec retry court le temps que le Navigator racine s'attache au démarrage à froid. `navigatorKey` exposé par le router. `main()` : `ProviderContainer` bootstrap pour injecter le service avant l'arbre de widgets + handler `onBackgroundMessage` top-level (vide, mais requis).
+- **App** : `AuthController` repousse le token FCM à l'entrée dans l'état connecté (`init()` tourne avant qu'une session Sanctum existe → l'envoi initial est perdu au tout premier login).
+- **Test e2e sur émulateur** : `docker compose` + `artisan serve` + `queue:work` + émulateur Firebase Auth. Login OTP via l'émulateur → publier → chercher → réserver, toutes les requêtes passent (connexion émulateur ↔ API validée). Push FCM réel reçu sur l'émulateur `yobu_pixel` (image Google Play), app en arrière-plan. **Piège rencontré et noté** : une app `am force-stop` ne reçoit plus FCM (état "stopped" Android) — le vrai « app fermée » = swipe utilisateur, pas force-stop.
+
+**Critère de fin atteint :** partiellement. Notif reçue sur l'émulateur (pas encore sur un vrai téléphone, USB indispo aujourd'hui) ; job traité dans `queue:work` ; deep link au tap câblé. La queue en supervisor tourne déjà sur le VPS (`yobu-queue.service`, fait le 06/09).
+
+**Ce que j'ai appris :**
+- L'émulateur `yobu_pixel` (Google Play) **reçoit FCM sans compte Google connecté** une fois le checkin Play Services fait — le `FcmRetry` initial après un `pm clear` est transitoire.
+- `am force-stop` ≠ « app fermée » pour tester FCM : Android exclut les packages *stopped* des broadcasts. Tester en swipant depuis les récents, ou app en arrière-plan.
+- `phpunit.xml` en `QUEUE_CONNECTION=sync` : les tests booking exécutent le job. Ça passe parce que `fcm_token` est `null` en factory — fragile, noté dans `DETTE.md`.
+
+**Reste :** confirmer sur un vrai téléphone Android (5 min, une fois). `.transfer/api.tar.gz` (résidu du transfert VPS) ajouté à `.gitignore`.
+
+**Demain :** J13 — mes réservations, home, et le rappel de 5h30 (le scheduler côté VPS est à câbler, cf `07-deploiement.md §9`).
+
 <!-- Nouvelles entrées AU-DESSUS de cette ligne, la plus récente en premier -->
 
 ---

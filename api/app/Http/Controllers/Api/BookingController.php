@@ -9,6 +9,7 @@ use App\Http\Resources\BookingResource;
 use App\Models\Booking;
 use App\Models\Trip;
 use App\Services\BookingService;
+use App\Services\FcmService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -20,6 +21,7 @@ class BookingController extends Controller
     public function store(
         StoreBookingRequest $request,
         BookingService $bookings,
+        FcmService $fcm,
     ): JsonResponse {
         $trip = Trip::findOrFail($request->validated('trip_id'));
 
@@ -28,7 +30,9 @@ class BookingController extends Controller
             $trip,
             $request->validated('date'),
         );
-        $booking->load('trip.driver');
+        $booking->load('trip.driver', 'rider');
+
+        $fcm->notifyBookingRequested($booking);
 
         return BookingResource::make($booking)->response()->setStatusCode(201);
     }
@@ -61,6 +65,7 @@ class BookingController extends Controller
         UpdateBookingRequest $request,
         Booking $booking,
         BookingService $bookings,
+        FcmService $fcm,
     ): BookingResource {
         $status = $request->validated('status');
 
@@ -74,6 +79,9 @@ class BookingController extends Controller
             $status === 'accepted'
                 ? $bookings->accept($booking)
                 : $booking->update(['status' => 'rejected']);
+
+            $booking->load(['trip.driver', 'rider']);
+            $fcm->notifyBookingResponded($booking);
         }
 
         return BookingResource::make($booking->load(['trip.driver', 'rider']));

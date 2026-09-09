@@ -16,3 +16,5 @@ api/storage/app/firebase/*.json
 # Env
 .env
 *.env
+
+.transfer/

@@ -556,6 +556,35 @@ Relecture méthode par méthode contre `02-technique.md §6` : rien à corriger.
 
 **Demain :** J19 — build Android release signé pointant sur la prod + fiche Play Store (description FR, captures, politique de confidentialité). Publication en test interne.
 
+---
+
+### J19 — 10/09 — Build release + Play Store (la partie code)
+
+**Fait (code + rédac) :**
+- **Signature release** dans `build.gradle.kts` : lit `android/key.properties` (gitignoré), fallback debug si absent — `flutter run --release` marche toujours en local.
+- **Version** `pubspec` `0.1.0+1` → `1.0.0+1`. `android:label` `yobu` → `YOBU`.
+- **Plus Jakarta Sans bundlée** (dette 18/07) : fichier variable en `assets/fonts/`, famille `fonts:` dans pubspec, `google_fonts` **retiré** des deps, `AppText._jakarta` + `ThemeData` passent à `fontFamily: 'PlusJakartaSans'`. Plus aucun téléchargement de police, jamais.
+- **Icône adaptative placeholder** : « Y » vert menthe sur fond `#05301C` (`mipmap-anydpi-v26/ic_launcher.xml` + foreground vector + couleur). Couvre Android 8+. Les PNG legacy restent l'icône Flutter par défaut — à régénérer avec `flutter_launcher_icons` + une vraie source 1024px.
+- **Politique de confidentialité** : `api/public/privacy.html` (FR, servie telle quelle par Caddy → `https://api.yobu.sn/privacy.html` une fois le domaine branché). Email de contact laissé en TODO (`contact@yobu.sn` à créer, pas l'adresse perso).
+- **`docs/08-play-store.md`** : procédure domaine + Caddy (§0), keystore, commandes de build, **texte de la fiche Play prêt** (nom, desc courte 80 car., desc longue « le détour », catégorie, Data safety), checklist test interne.
+- **Build de vérif** : `flutter build apk --release --dart-define=API_URL=https://api.yobu.sn` → `app-release.apk` **55,7 Mo** (fat APK ; l'AAB livrera ~15-20 Mo/device). Config gradle OK, police bundlée OK, icône OK. `flutter analyze` clean.
+
+**Critère de fin :** partiel — le code est prêt. **Restent, côté Penda :** brancher le domaine (§0), générer le keystore, produire les assets visuels (icône 512, feature graphic, captures), créer l'app Play + uploader l'AAB + activer le test interne + 5 testeurs.
+
+**Ce que j'ai appris :**
+- `google_fonts` avec bundling est fragile (matching par hash de version). Passer à une **famille `fonts:` native + fichier variable** est déterministe : un seul `.ttf` (176 Ko), tous les poids, zéro réseau. Plus simple que ce que la dette prévoyait.
+- Un build **release** ne tolère pas le cleartext → J19 **dépend** du domaine + TLS. C'est la dette du 06/09 qui devient bloquante ici, pas avant.
+
+**Reste — côté Penda (cumul J18 + J19) :**
+- **Domaine `yobu.sn`** : DNS `api.yobu.sn` → VPS, Caddyfile, `APP_URL=https://…` (`08-play-store.md §0`). Débloque J19 **et** le HTTPS forcé armé au J18.
+- Compte Play Developer (25 $), keystore, assets visuels, upload, test interne.
+- **Sentry** (J18 C) : `composer require sentry/sentry-laravel` sur le VPS, DSN, `php artisan sentry:test`.
+- **Backup restauré** (J18 G) : `07-deploiement.md §11`.
+- **Session Google Cloud / Blaze / clé Maps** — toujours pas faite, bloque le SMS réel au J20.
+- Vérifier la Deploy key GitHub.
+
+**Demain :** J20 — point de rencontre, 6h. Pas de code. Faire installer l'app devant les gens, les regarder s'en servir sans les aider, tout noter. Compter : conducteurs, passagers, km marchés pour venir au point, prix payé.
+
 <!-- Nouvelles entrées AU-DESSUS de cette ligne, la plus récente en premier -->
 
 ---

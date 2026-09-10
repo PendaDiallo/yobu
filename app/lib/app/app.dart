@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../shared/theme/tokens.dart';
 import 'router.dart';
@@ -14,6 +13,7 @@ class YobuApp extends StatelessWidget {
       routerConfig: router,
       theme: ThemeData(
         useMaterial3: true,
+        fontFamily: AppText.fontFamily,
         scaffoldBackgroundColor: AppColors.background,
         colorScheme: ColorScheme.fromSeed(
           seedColor: AppColors.primary,
@@ -21,7 +21,6 @@ class YobuApp extends StatelessWidget {
           surface: AppColors.surface,
           error: AppColors.danger,
         ),
-        textTheme: GoogleFonts.plusJakartaSansTextTheme(),
         appBarTheme: AppBarTheme(
           backgroundColor: AppColors.background,
           foregroundColor: AppColors.ink,

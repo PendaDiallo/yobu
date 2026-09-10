@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Source de vérité du design system — direction B « Affirmé ».
 /// Spécifié dans docs/03-design-brief.md §2. Aucune valeur visuelle n'existe
@@ -41,10 +40,13 @@ abstract final class AppRadius {
   static const full = 999.0;
 }
 
-/// Plus Jakarta Sans via google_fonts. Poids 500/700/800 uniquement — jamais de light.
-/// L'échelle est VOLONTAIREMENT très contrastée : c'est elle qui porte la hiérarchie.
-/// Chiffres en tabular-nums partout — sinon les colonnes dansent d'une carte à l'autre.
+/// Plus Jakarta Sans, bundlée en asset (fichier variable). Poids 500/700/800
+/// uniquement — jamais de light. L'échelle est VOLONTAIREMENT très contrastée :
+/// c'est elle qui porte la hiérarchie. Chiffres en tabular-nums partout —
+/// sinon les colonnes dansent d'une carte à l'autre.
 abstract final class AppText {
+  static const fontFamily = 'PlusJakartaSans';
+
   static final display = _jakarta(34, FontWeight.w800, 1.0, -1.0); // LE PRIX
   static final h1 = _jakarta(24, FontWeight.w800, 1.2, -0.5);
   static final h2 = _jakarta(17, FontWeight.w700, 1.35, -0.2);
@@ -59,7 +61,8 @@ abstract final class AppText {
     double height, [
     double? letterSpacing,
   ]) {
-    return GoogleFonts.plusJakartaSans(
+    return TextStyle(
+      fontFamily: fontFamily,
       fontSize: size,
       fontWeight: weight,
       height: height,

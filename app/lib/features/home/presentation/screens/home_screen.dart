@@ -53,19 +53,19 @@ class HomeScreen extends ConsumerWidget {
               const SizedBox(height: AppSpacing.sm),
               YobuButton(
                 label: 'Chercher un trajet',
-                onPressed: () => context.goNamed(AppRoute.search),
+                onPressed: () => context.pushNamed(AppRoute.search),
               ),
               const SizedBox(height: AppSpacing.sm),
               YobuButton(
                 label: 'Publier un trajet',
                 variant: YobuButtonVariant.secondary,
-                onPressed: () => context.goNamed(AppRoute.tripCreate),
+                onPressed: () => context.pushNamed(AppRoute.tripCreate),
               ),
               const SizedBox(height: AppSpacing.sm),
               YobuButton(
                 label: 'Mes réservations',
                 variant: YobuButtonVariant.ghost,
-                onPressed: () => context.goNamed(AppRoute.bookings),
+                onPressed: () => context.pushNamed(AppRoute.bookings),
               ),
             ],
           ),

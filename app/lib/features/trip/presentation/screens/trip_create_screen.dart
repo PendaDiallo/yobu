@@ -88,7 +88,9 @@ class _TripCreateScreenState extends ConsumerState<TripCreateScreen> {
             seatsTotal: _seats,
             pricePerSeat: int.parse(_price.text),
           );
-      if (mounted) context.goNamed(AppRoute.tripMyList);
+      // Remplace l'écran de publication par la liste des trajets, mais garde
+      // `home` dessous — sinon plus de retour possible.
+      if (mounted) context.pushReplacementNamed(AppRoute.tripMyList);
     } on AppException catch (exception) {
       setState(() => _error = exception.message);
     }

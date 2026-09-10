@@ -6,6 +6,7 @@
 
 | Date | Quoi | Pourquoi on l'assume | Quand on paie |
 |---|---|---|---|
+| 10/09 | **« On te prévient dès qu'il y en a un » (état vide de la recherche) n'est pas branché** | Pas de table `search_alerts` ni de job de notification. En phase de lancement (30 personnes, conducteurs recrutés à la main), le fondateur SAIT quand un conducteur rejoint un corridor — la promesse se tient à la main. Une vraie feature d'alerte = table + endpoint + matching à la publication. | Post-J20, si la rétention montre des recherches vides répétées. |
 | 09/09 | **`/api/home` (rôle conducteur) montre le trajet du jour même après l'heure de départ** | `HomeService::nextOccurrence` calcule la prochaine date sur `days_of_week` sans regarder l'heure — à 9h le conducteur voit encore « aujourd'hui · 06:45 ». L'info n'est pas fausse (trajet récurrent), juste pas idéale. | J17 (finition) : sauter aujourd'hui si `now > departure_time`. |
 | 16/07 | **Pas de chat intégré → WhatsApp** | Reverb = 3-4 j. **C'est ce troc qui finance la bascule Laravel.** Les gens sont déjà sur WhatsApp. | seulement s'ils le réclament |
 | 16/07 | iOS non supporté | 99 $/an + certificats, marché sur Android | quand un user le demande |

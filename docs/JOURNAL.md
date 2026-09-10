@@ -469,6 +469,25 @@ Documenté dans `CLAUDE.md` (conventions app) et `docs/02-technique.md §10` (ex
 
 **Demain :** J15 — tampon n°2. **N'y planifie rien** (règle 3).
 
+---
+
+### J16 — 10/09 — Onboarding + états vides
+
+**Fait :**
+- **`splash`** (`auth/…/splash_screen`) : wordmark YOBU blanc sur vert profond, puis routage — session + profil complet → `home` · session + profil vide → `profile_setup` · pas de session ou `/me` échoue → `welcome`. Si l'app a été ouverte sur un tap de notif (`getInitialMessage()` non-null), on ne navigue pas : `NotificationService` a déjà programmé la bonne destination. **C'est le branchement post-auth resté en suspens depuis J12.**
+- **`welcome`** : `PageView` natif (exception assumée `03-design-brief §3`), 3 slides qui parlent du **détour**, pas du covoiturage — « Ton voisin va au Plateau ce matin » / « Une fois, pas tous les matins » / « Tu sais avec qui tu montes ». Indicateur de points + bouton « Suivant » → « Commencer » qui envoie sur `phone_auth`.
+- **États vides** : déjà tous là (câblés J9-J14 : bookings, trip_requests, trip_my_list, search_results, home). Retouché `search_results` : plus de `SizedBox.shrink()` quand aucune recherche (→ `EmptyState` « Lance une recherche »), et la copie « aucun conducteur » capture l'intention (« On te prévient dès qu'il y en a un »).
+- Vérifié sur émulateur : `pm clear` → splash → welcome → 3 slides → Commencer → `phone_auth`. Avec session : splash → `/api/me` → `/api/home` → dashboard. `flutter analyze` clean.
+
+**Critère de fin atteint :** oui — aucun écran ne montre du blanc ; chaque état vide capture l'intention. (Le 17e écran n'existe pas : les 16 de `01-produit.md §3` sont tous réels.)
+
+**Ce que j'ai appris :**
+- `getInitialMessage()` sur émulateur ajoute ~2-3 s au splash. Acceptable, mais c'est pourquoi le splash affiche un vrai contenu (wordmark) et pas juste un spinner.
+
+**Reste :** rien de bloquant. Dette ajoutée : « on te prévient » de l'état vide recherche = promesse tenue à la main en phase de lancement, pas de table `search_alerts` (`DETTE.md`, 10/09).
+
+**Demain :** J17 — finition (états de chargement, cas réseau, français correct) + vérifier que les 5 events analytics remontent et que le taux de match est calculable.
+
 <!-- Nouvelles entrées AU-DESSUS de cette ligne, la plus récente en premier -->
 
 ---

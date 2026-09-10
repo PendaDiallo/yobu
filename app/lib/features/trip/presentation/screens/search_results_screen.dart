@@ -22,7 +22,14 @@ class SearchResultsScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text('Conducteurs')),
       body: SafeArea(
         child: results == null
-            ? const SizedBox.shrink()
+            ? EmptyState(
+                icon: Icons.search_rounded,
+                title: 'Lance une recherche',
+                message: 'Indique ton départ, ton arrivée et ton horaire '
+                    'pour voir les conducteurs.',
+                ctaLabel: 'Rechercher',
+                onCta: () => context.pop(),
+              )
             : results.when(
                 loading: () =>
                     const Center(child: CircularProgressIndicator()),
@@ -39,11 +46,11 @@ class SearchResultsScreen extends ConsumerWidget {
                 data: (matches) => matches.isEmpty
                     ? EmptyState(
                         icon: Icons.search_off_rounded,
-                        title: 'Aucun conducteur trouvé',
+                        title: 'Personne sur ce trajet, pour l\'instant',
                         message:
-                            'Personne ne passe près de chez toi à cette '
-                            'heure pour l\'instant. Réessaie avec un autre '
-                            'horaire.',
+                            'Aucun conducteur ne passe près de chez toi à '
+                            'cette heure. On te prévient dès qu\'il y en a un — '
+                            'en attendant, essaie un autre horaire.',
                         ctaLabel: 'Modifier ma recherche',
                         onCta: () => context.pop(),
                       )

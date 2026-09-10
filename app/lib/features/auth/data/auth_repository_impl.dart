@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 
 import '../../../core/errors/app_exception.dart';
@@ -83,8 +82,8 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   AppException _translate(Object error) {
-    if (error is AppException) return error;
-
+    // Les erreurs Firebase (OTP) ont leurs propres codes ; le reste (échange
+    // du token contre l'API Laravel, réseau) passe par la traduction commune.
     if (error is firebase.FirebaseAuthException) {
       return AppException(switch (error.code) {
         'invalid-phone-number' => 'Ce numéro n\'est pas valide.',
@@ -99,12 +98,6 @@ class AuthRepositoryImpl implements AuthRepository {
       });
     }
 
-    if (error is DioException) {
-      return const AppException(
-        'Impossible de joindre le serveur. Vérifie ta connexion et réessaie.',
-      );
-    }
-
-    return const AppException('Une erreur est survenue. Réessaie.');
+    return AppException.fromDio(error);
   }
 }

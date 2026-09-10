@@ -11,6 +11,7 @@ class RatingController {
 
   Future<void> submit({
     required int bookingId,
+    required int tripId,
     required int score,
     required List<String> tags,
     String? comment,
@@ -23,7 +24,10 @@ class RatingController {
         );
 
     // Le signal « un trajet a eu lieu » — 5e des events de 04-roadmap §J17.
-    await _ref.read(analyticsProvider).logEvent(name: 'trip_completed');
+    await _ref.read(analyticsProvider).logEvent(
+      name: 'trip_completed',
+      parameters: {'trip_id': tripId},
+    );
   }
 }
 

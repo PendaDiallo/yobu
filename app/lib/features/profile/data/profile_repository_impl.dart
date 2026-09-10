@@ -1,5 +1,3 @@
-import 'package:dio/dio.dart';
-
 import '../../../core/errors/app_exception.dart';
 import '../domain/profile_repository.dart';
 import '../domain/user.dart';
@@ -40,26 +38,8 @@ class ProfileRepositoryImpl implements ProfileRepository {
   Future<User> _guard(Future<User> Function() run) async {
     try {
       return await run();
-    } on DioException catch (error) {
-      throw _translate(error);
+    } catch (error) {
+      throw AppException.fromDio(error);
     }
-  }
-
-  AppException _translate(DioException error) {
-    // Le premier message d'erreur de validation Laravel est déjà en français.
-    final data = error.response?.data;
-    if (data is Map<String, dynamic>) {
-      final errors = data['errors'];
-      if (errors is Map<String, dynamic> && errors.isNotEmpty) {
-        final first = errors.values.first;
-        if (first is List && first.isNotEmpty) {
-          return AppException(first.first as String);
-        }
-      }
-    }
-
-    return const AppException(
-      'Impossible de joindre le serveur. Vérifie ta connexion et réessaie.',
-    );
   }
 }

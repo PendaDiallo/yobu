@@ -1,5 +1,3 @@
-import 'package:dio/dio.dart';
-
 import '../../../core/errors/app_exception.dart';
 import '../domain/match.dart';
 import '../domain/place.dart';
@@ -26,7 +24,7 @@ class TripRepositoryImpl implements TripRepository {
         destLng: destination.lng,
       ));
     } catch (error) {
-      throw _translate(error);
+      throw AppException.fromDio(error);
     }
   }
 
@@ -49,7 +47,7 @@ class TripRepositoryImpl implements TripRepository {
 
       return [for (final json in rows) Match.fromJson(json)];
     } catch (error) {
-      throw _translate(error);
+      throw AppException.fromDio(error);
     }
   }
 
@@ -76,7 +74,7 @@ class TripRepositoryImpl implements TripRepository {
         'price_per_seat': pricePerSeat,
       }));
     } catch (error) {
-      throw _translate(error);
+      throw AppException.fromDio(error);
     }
   }
 
@@ -87,7 +85,7 @@ class TripRepositoryImpl implements TripRepository {
         for (final json in await _api.mine()) Trip.fromJson(json),
       ];
     } catch (error) {
-      throw _translate(error);
+      throw AppException.fromDio(error);
     }
   }
 
@@ -96,7 +94,7 @@ class TripRepositoryImpl implements TripRepository {
     try {
       return Trip.fromJson(await _api.update(tripId, {'active': active}));
     } catch (error) {
-      throw _translate(error);
+      throw AppException.fromDio(error);
     }
   }
 
@@ -105,26 +103,7 @@ class TripRepositoryImpl implements TripRepository {
     try {
       await _api.delete(tripId);
     } catch (error) {
-      throw _translate(error);
+      throw AppException.fromDio(error);
     }
-  }
-
-  AppException _translate(Object error) {
-    if (error is AppException) return error;
-
-    if (error is DioException) {
-      // Les messages métier de l'API (validation, 403, 409) sont déjà
-      // en français : on les fait suivre tels quels.
-      final message = error.response?.data?['message'];
-      if (message is String && message.isNotEmpty) {
-        return AppException(message);
-      }
-
-      return const AppException(
-        'Impossible de joindre le serveur. Vérifie ta connexion et réessaie.',
-      );
-    }
-
-    return const AppException('Une erreur est survenue. Réessaie.');
   }
 }

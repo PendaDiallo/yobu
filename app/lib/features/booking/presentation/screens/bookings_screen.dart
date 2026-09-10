@@ -129,6 +129,7 @@ class _BookingCardState extends ConsumerState<_BookingCard> {
       AppRoute.rating,
       extra: RatingArgs(
         bookingId: widget.booking.id,
+        tripId: widget.booking.trip.id,
         personName: '${driver.firstName} ${driver.lastName}'.trim(),
         personInitials: [driver.firstName, driver.lastName]
             .map((part) => part.isNotEmpty ? part[0] : '')

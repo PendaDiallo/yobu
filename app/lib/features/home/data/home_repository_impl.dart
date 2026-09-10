@@ -1,5 +1,3 @@
-import 'package:dio/dio.dart';
-
 import '../../../core/errors/app_exception.dart';
 import '../domain/home_repository.dart';
 import '../domain/home_summary.dart';
@@ -14,9 +12,11 @@ class HomeRepositoryImpl implements HomeRepository {
   Future<HomeSummary> summary() async {
     try {
       return HomeSummary.fromJson(await _api.summary());
-    } on DioException {
-      throw const AppException(
-        'Impossible de joindre le serveur. Vérifie ta connexion et réessaie.',
+    } catch (error) {
+      throw AppException.fromDio(
+        error,
+        fallback:
+            'Impossible de charger ton accueil. Vérifie ta connexion et réessaie.',
       );
     }
   }

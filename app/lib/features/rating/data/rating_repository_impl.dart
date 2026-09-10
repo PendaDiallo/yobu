@@ -1,5 +1,3 @@
-import 'package:dio/dio.dart';
-
 import '../../../core/errors/app_exception.dart';
 import '../domain/rating_repository.dart';
 import 'rating_api.dart';
@@ -23,23 +21,13 @@ class RatingRepositoryImpl implements RatingRepository {
         tags: tags,
         comment: comment,
       );
-    } on DioException catch (error) {
-      // Le premier message de validation Laravel est déjà en français
+    } catch (error) {
+      // Le 1er message de validation Laravel est déjà en français
       // (« Tu as déjà noté ce trajet. »).
-      final data = error.response?.data;
-      if (data is Map && data['errors'] is Map) {
-        final first = (data['errors'] as Map).values.first;
-        if (first is List && first.isNotEmpty) {
-          throw AppException('${first.first}');
-        }
-      }
-      final message = data is Map ? data['message'] : null;
-      if (message is String && message.isNotEmpty) {
-        throw AppException(message);
-      }
-
-      throw const AppException(
-        'Impossible d\'envoyer ta note. Vérifie ta connexion et réessaie.',
+      throw AppException.fromDio(
+        error,
+        fallback:
+            'Impossible d\'envoyer ta note. Vérifie ta connexion et réessaie.',
       );
     }
   }

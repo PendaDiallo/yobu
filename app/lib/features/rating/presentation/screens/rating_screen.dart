@@ -16,12 +16,14 @@ import '../rating_controller.dart';
 class RatingArgs {
   const RatingArgs({
     required this.bookingId,
+    required this.tripId,
     required this.personName,
     required this.personInitials,
     this.personPhotoUrl,
   });
 
   final int bookingId;
+  final int tripId;
   final String personName;
   final String personInitials;
   final String? personPhotoUrl;
@@ -61,6 +63,7 @@ class _RatingScreenState extends ConsumerState<RatingScreen> {
     try {
       await ref.read(ratingControllerProvider).submit(
             bookingId: args.bookingId,
+            tripId: args.tripId,
             score: _score,
             tags: _selectedTags.toList(),
             comment: _comment.text.trim().isEmpty ? null : _comment.text.trim(),

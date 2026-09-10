@@ -488,6 +488,37 @@ Documenté dans `CLAUDE.md` (conventions app) et `docs/02-technique.md §10` (ex
 
 **Demain :** J17 — finition (états de chargement, cas réseau, français correct) + vérifier que les 5 events analytics remontent et que le taux de match est calculable.
 
+---
+
+### J17 — 10/09 — Finition + vérification des métriques
+
+**Fait :**
+- **Traduction d'erreur réseau centralisée** : `AppException.fromDio()` dans `core/errors/` (échelle : erreur de validation Laravel → `message` API → fallback réseau → générique). Les 6 repos impl (auth, booking, trip, profile, rating, home) y passent — ~50 lignes de duplication supprimées, `home` récupère le traitement complet (avant : `DioException` seul).
+- **Intercepteur 401** dans `api_client.dart` : token Sanctum révoqué/expiré → `TokenStorage.clear()` + retour `/welcome`. Avant : un 401 affichait « serveur injoignable ».
+- **Events analytics finis** : `trip_id` ajouté à `booking_requested`, `booking_accepted`, `trip_completed` (threadé via `RatingArgs.tripId`). `search_performed` portait déjà `results_count`, `trip_published` ses params.
+- **Passe mode avion** (vrai téléphone) : relance à froid sans serveur → le splash gère l'échec `getMe()` et route vers `welcome`, aucun crash, aucun écran blanc. Tous les écrans liste routent leurs erreurs via `AppException` → message FR propre (`$error` = `toString()` = le message).
+- **Passe français** : aucune chaîne user-facing en anglais ni typo. Les seuls « loading/disabled » restants sont dans `/debug` (galerie dev, hors produit).
+- `flutter analyze` clean · `php artisan test` 77 verts.
+
+**Vérification 5 events × métriques `05-strategie.md §7`, une par une :**
+| Métrique | Calculable ? | D'où |
+|---|---|---|
+| **Taux de match** (la seule qui compte) | ✅ | Firebase — `search_performed` : `count(results_count>0) / count(*)` |
+| **Taux d'acceptation** | ✅ | `booking_accepted / booking_requested` (Firebase, ratio agrégé ; sliçable par corridor via `trip_id`). Plus fiable encore : requête Postgres sur `bookings.status`. |
+| **Rétention S2** | ✅ | Firebase rétention native sur `booking_requested` (pseudo-id user), ou Postgres |
+| **Fréquence de renouvellement** | ✅ | **Postgres** (pas Firebase — pas de `rider_id` en param, à raison) : `bookings` par conducteur, riders distincts dans le temps |
+| **Km économisés** | ⚠️ | **Ni Firebase ni Postgres.** Nécessite la coordonnée du « point de rencontre » qui n'existe pas en V1 (`IDEES.md`). → **mesure terrain du J20** (combien de km chacun marche pour venir au point). |
+
+**Ce que j'ai appris :**
+- 4 des 5 métriques de §7 se calculent : 3 depuis Firebase, 1 depuis Postgres. La 5e (« km économisés ») est une mesure de terrain, pas une métrique d'app — à ne pas chercher à instrumenter côté code.
+- `core/errors/app_exception.dart` importe maintenant `dio` : assumé, ce n'est pas un appel HTTP, c'est du mapping d'erreur, et `core/network/` connaît déjà `dio`.
+
+**Reste — côté Penda, hors clavier :**
+- **DebugView Firebase** : `adb shell setprop debug.firebase.analytics.app sn.yobu`, déclencher les 5 events, vérifier noms + params dans la console.
+- Dans ~24 h : lire le **taux de match** dans les rapports Analytics.
+
+**Demain :** J18 — durcissement (audit des Policies endpoint par endpoint, rate limiting, Sentry, secrets, HTTPS, backup restauré pour de vrai). Ne se coupe jamais.
+
 <!-- Nouvelles entrées AU-DESSUS de cette ligne, la plus récente en premier -->
 
 ---

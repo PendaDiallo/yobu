@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../app/router.dart';
 import '../env.dart';
 import 'token_storage.dart';
 
@@ -23,6 +25,18 @@ final dioProvider = Provider<Dio>((ref) {
           options.headers['Authorization'] = 'Bearer $token';
         }
         handler.next(options);
+      },
+      onError: (error, handler) async {
+        // Token Sanctum révoqué ou expiré : on nettoie et on renvoie à
+        // l'accueil plutôt que de laisser un « serveur injoignable » trompeur.
+        if (error.response?.statusCode == 401 && await tokens.read() != null) {
+          await tokens.clear();
+          final context = navigatorKey.currentContext;
+          if (context != null && context.mounted) {
+            context.goNamed(AppRoute.welcome);
+          }
+        }
+        handler.next(error);
       },
     ),
   );

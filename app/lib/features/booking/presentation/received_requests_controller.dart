@@ -18,9 +18,10 @@ class ReceivedRequestsController extends AsyncNotifier<List<Booking>> {
         await ref.read(bookingRepositoryProvider).respond(booking.id, status);
 
     if (status == 'accepted') {
-      await ref
-          .read(analyticsProvider)
-          .logEvent(name: 'booking_accepted');
+      await ref.read(analyticsProvider).logEvent(
+        name: 'booking_accepted',
+        parameters: {'trip_id': booking.trip.id},
+      );
     }
 
     state = AsyncData([

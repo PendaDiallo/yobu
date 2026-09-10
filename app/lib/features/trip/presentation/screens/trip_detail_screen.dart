@@ -44,7 +44,10 @@ class _TripDetailScreenState extends ConsumerState<TripDetailScreen> {
             tripId: args.match.trip.id,
             date: args.date,
           );
-      await ref.read(analyticsProvider).logEvent(name: 'booking_requested');
+      await ref.read(analyticsProvider).logEvent(
+        name: 'booking_requested',
+        parameters: {'trip_id': args.match.trip.id},
+      );
       if (mounted) setState(() => _requested = true);
     } on AppException catch (exception) {
       setState(() => _error = exception.message);

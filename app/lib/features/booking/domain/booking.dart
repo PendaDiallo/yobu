@@ -19,7 +19,6 @@ abstract class Booking with _$Booking {
 
     /// Trajet fini, j'y étais, pas encore noté — calculé par l'API.
     @Default(false) bool canRate,
-    required int seats,
     required int pricePaid,
     required BookingTrip trip,
     required BookingParty driver,

@@ -12,7 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Un seul ingress : Caddy, sur le même hôte, qui termine le TLS et
+        // transmet X-Forwarded-Proto. On lui fait confiance pour que
+        // $request->isSecure() dise vrai derrière le proxy.
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // Les routes API répondent TOUJOURS en JSON — jamais de redirect vers

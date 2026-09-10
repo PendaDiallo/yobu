@@ -51,7 +51,6 @@ class BookingService
             'rider_id' => $rider->id,
             'date' => $date,
             'status' => 'pending',
-            'seats' => 1,
             'price_paid' => $trip->price_per_seat,
         ]);
     }

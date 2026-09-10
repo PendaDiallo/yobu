@@ -39,7 +39,6 @@ class BookingResource extends JsonResource
                 && $this->status === 'completed'
                 && $this->isParticipant($request->user())
                 && $this->ratings->isEmpty(),
-            'seats' => $this->seats,
             'price_paid' => $this->price_paid,
             'trip' => [
                 'id' => $this->trip->id,

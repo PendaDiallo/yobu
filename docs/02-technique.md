@@ -85,8 +85,7 @@ trip_id           bigint FK → trips
 rider_id          bigint FK → users
 date              date NOT NULL                 -- LE jour concerné
 status            varchar CHECK (status IN ('pending','accepted','rejected','cancelled','completed'))
-seats             smallint DEFAULT 1
-price_paid        int NOT NULL
+price_paid        int NOT NULL                  -- une réservation = une place en V1 (multi-place → V1.1)
 created_at, updated_at
 UNIQUE (trip_id, rider_id, date)                -- pas deux demandes le même jour
 

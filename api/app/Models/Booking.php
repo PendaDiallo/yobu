@@ -30,7 +30,6 @@ class Booking extends Model
         'rider_id',
         'date',
         'status',
-        'seats',
         'price_paid',
     ];
 

@@ -11,9 +11,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/health', HealthController::class);
 
-Route::post('/auth/firebase', [AuthController::class, 'firebase']);
+Route::post('/auth/firebase', [AuthController::class, 'firebase'])
+    ->middleware('throttle:firebase-auth');
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::get('/me', [MeController::class, 'show']);
     Route::patch('/me', [MeController::class, 'update']);
     Route::post('/me/photo', [MeController::class, 'storePhoto']);
@@ -22,7 +23,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Les routes fixes avant le paramètre {trip}.
     Route::get('/trips/price-hint', [TripController::class, 'priceHint']);
     Route::get('/trips/mine', [TripController::class, 'mine']);
-    Route::post('/trips/search', [TripController::class, 'search']);
+    Route::post('/trips/search', [TripController::class, 'search'])
+        ->middleware('throttle:search');
     Route::post('/trips', [TripController::class, 'store']);
     Route::patch('/trips/{trip}', [TripController::class, 'update']);
     Route::delete('/trips/{trip}', [TripController::class, 'destroy']);

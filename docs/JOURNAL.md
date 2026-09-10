@@ -519,6 +519,43 @@ Documenté dans `CLAUDE.md` (conventions app) et `docs/02-technique.md §10` (ex
 
 **Demain :** J18 — durcissement (audit des Policies endpoint par endpoint, rate limiting, Sentry, secrets, HTTPS, backup restauré pour de vrai). Ne se coupe jamais.
 
+---
+
+### J18 — 10/09 — Le durcissement (A–F)
+
+**Audit Policies — les 4 attaques du prompt renvoient 403, tests Feature à l'appui (préexistants, J5/J7/J11/J14) :**
+| Attaque | Test | Policy |
+|---|---|---|
+| PATCH un trip pas à soi | `TripTest::test_a_stranger_cannot_toggle_or_delete_someone_elses_trip` | `TripPolicy::update/delete` → `driver_id` |
+| Accepter un booking dont on n'est pas conducteur | `BookingTest::test_a_stranger_cannot_respond` + `test_only_the_driver_can_respond` | `BookingPolicy::respond` → `trip.driver_id` |
+| Noter un booking non participé | `RatingTest::test_a_stranger_cannot_rate_a_booking` | `BookingPolicy::rate` → completed + participant |
+| Écrire `users.rating` via PATCH /me | `MeTest::test_rating_and_counters_can_never_be_written_by_the_client` | absent de `$fillable` **et** de `UpdateMeRequest` |
+Relecture méthode par méthode contre `02-technique.md §6` : rien à corriger.
+
+**Fait :**
+- **Rate limiting** (le vrai manque — il n'y en avait aucun) : 3 limiteurs dans `AppServiceProvider` — `api` 60/min, `firebase-auth` 5/min par IP, `search` 30/min par user. `throttle:api` sur tout le groupe `auth:sanctum`, `throttle:firebase-auth` sur `/auth/firebase`, `throttle:search` sur `/trips/search`. 2 tests : 6ᵉ auth → 429, 31ᵉ search → 429.
+- **Tests dispatch FCM** (dette 09/09) : `Bus::fake()` en `setUp` de `BookingTest` + `assertDispatched(SendPushNotification::class)` sur requested / accepted / rejected (nouveau test « le conducteur refuse »).
+- **`bookings.seats` supprimée** (dette 06/09) : migration `drop_seats_from_bookings` + `$fillable` / `BookingResource` / `BookingFactory` / `BookingService` + entité Flutter `Booking` (freezed régénéré) + schéma `02-technique.md §3`.
+- **Sweep secrets** : `git ls-files` ne suit aucun `.json`/`.key`/`.env` sensible. Le vrai `service-account.json` n'est pas suivi ✅. Ajouté `/storage/app/firebase/` au `.gitignore` (défense en profondeur).
+- **HTTPS armé** : `URL::forceScheme('https')` dans `AppServiceProvider`, conditionné à `APP_URL` commençant par `https://` — dormant tant que le VPS est en http nu, s'active tout seul au domaine. `trustProxies(*)` pour Caddy dans `bootstrap/app.php`. App : `usesCleartextTraffic` déjà confiné à `src/debug/` ✅.
+- **`ic_notification`** (dette 09/09) : vector drawable monochrome (épingle) + meta-data `default_notification_icon`.
+- `php artisan test` : **80 verts** (+3) · `flutter analyze` clean.
+
+**Critère de fin :** 4 attaques → 403 (tests) ✅ · rate limit → 429 (tests) ✅ · aucun secret suivi ✅. **Restent 2 cases : backup restauré, Sentry reçoit une erreur** — côté Penda (voir plus bas).
+
+**Ce que j'ai appris :**
+- Les 4 attaques du prompt J18 étaient déjà couvertes depuis J5/J7/J11/J14 : le durcissement a surtout consisté à *vérifier*, pas à écrire des Policies. Le vrai trou était le rate limiting (zéro).
+- `Bus::fake()` en `setUp` rend tous les tests booking immunisés contre le vrai Firebase **et** permet les `assertDispatched` — plus propre que le hack « `fcm_token` null en factory ».
+
+**Reste — côté Penda, hors clavier :**
+- **Sentry** (C du plan) : à câbler après cette session — `composer require sentry/sentry-laravel`, DSN dans le `.env` du VPS, `php artisan sentry:test`. Créer le projet Sentry d'abord.
+- **Backup restauré** (G) : sur le VPS, le bloc `07-deploiement.md §11` — `pg_restore` dans `yobu_restore_test`, vérifier les `count(*)`, `dropdb`. Cocher la case §11.
+- **Session Google Cloud / Blaze / clé Maps** — dette 21/07 « avant J18 », toujours pas faite. Bloque le test SMS réel au J20.
+- **App Check** — noté en dette 10/09, à faire avant l'ouverture large (pas un trou de sécu, un risque de quota SMS).
+- Vérifier la **Deploy key GitHub** (dette 06/09).
+
+**Demain :** J19 — build Android release signé pointant sur la prod + fiche Play Store (description FR, captures, politique de confidentialité). Publication en test interne.
+
 <!-- Nouvelles entrées AU-DESSUS de cette ligne, la plus récente en premier -->
 
 ---

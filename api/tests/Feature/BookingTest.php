@@ -2,15 +2,26 @@
 
 namespace Tests\Feature;
 
+use App\Jobs\SendPushNotification;
 use App\Models\Booking;
 use App\Models\Trip;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Bus;
 use Tests\TestCase;
 
 class BookingTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        // La queue tourne en `sync` dans les tests : sans ça, chaque
+        // réservation taperait le vrai Firebase. On fake le bus et on
+        // vérifie plutôt le dispatch (J12).
+        Bus::fake();
+    }
 
     private function authed(User $user): array
     {
@@ -39,6 +50,9 @@ class BookingTest extends TestCase
 
         // Le téléphone du conducteur reste caché tant que ce n'est pas accepté.
         $this->assertArrayNotHasKey('phone', $response->json('data.driver'));
+
+        // Le conducteur est notifié de la demande.
+        Bus::assertDispatched(SendPushNotification::class);
     }
 
     public function test_requesting_twice_the_same_day_is_rejected_in_french(): void
@@ -91,6 +105,22 @@ class BookingTest extends TestCase
             $booking->rider->phone,
             $response->json('data.rider.phone'),
         );
+
+        // Le passager est notifié de l'acceptation.
+        Bus::assertDispatched(SendPushNotification::class);
+    }
+
+    public function test_the_driver_can_reject_a_request_and_the_rider_is_notified(): void
+    {
+        $booking = Booking::factory()->create(['date' => $this->nextMonday()]);
+
+        $this->patchJson(
+            "/api/bookings/{$booking->id}",
+            ['status' => 'rejected'],
+            $this->authed($booking->trip->driver),
+        )->assertOk()->assertJsonPath('data.status', 'rejected');
+
+        Bus::assertDispatched(SendPushNotification::class);
     }
 
     public function test_accepting_when_the_last_seat_is_gone_returns_409(): void

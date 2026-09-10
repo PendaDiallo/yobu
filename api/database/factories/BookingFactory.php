@@ -25,7 +25,6 @@ class BookingFactory extends Factory
             'date' => fake()->dateTimeBetween('next weekday', '+7 weekdays')
                 ->format('Y-m-d'),
             'status' => 'pending',
-            'seats' => 1,
             'price_paid' => fn (array $attributes) => Trip::find($attributes['trip_id'])->price_per_seat,
         ];
     }

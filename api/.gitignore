@@ -25,3 +25,6 @@ Thumbs.db
 
 # Service account FACTICE pour l émulateur — jamais un vrai secret ici
 /storage/firebase-demo-credentials.json
+
+# Le VRAI service account Firebase (déposé à la main sur le VPS) — jamais commité
+/storage/app/firebase/

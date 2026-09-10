@@ -13,6 +13,9 @@ import '../features/booking/domain/booking_repository.dart';
 import '../features/home/data/home_api.dart';
 import '../features/home/data/home_repository_impl.dart';
 import '../features/home/domain/home_repository.dart';
+import '../features/rating/data/rating_api.dart';
+import '../features/rating/data/rating_repository_impl.dart';
+import '../features/rating/domain/rating_repository.dart';
 import '../features/profile/data/profile_api.dart';
 import '../features/profile/data/profile_repository_impl.dart';
 import '../features/profile/domain/profile_repository.dart';
@@ -51,6 +54,10 @@ final bookingRepositoryProvider = Provider<BookingRepository>((ref) {
 
 final homeRepositoryProvider = Provider<HomeRepository>((ref) {
   return HomeRepositoryImpl(HomeApi(ref.watch(dioProvider)));
+});
+
+final ratingRepositoryProvider = Provider<RatingRepository>((ref) {
+  return RatingRepositoryImpl(RatingApi(ref.watch(dioProvider)));
 });
 
 final analyticsProvider = Provider<FirebaseAnalytics>((ref) {

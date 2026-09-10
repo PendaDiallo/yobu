@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../app/router.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/formats.dart';
+import '../../../../features/rating/presentation/screens/rating_screen.dart';
 import '../../../../shared/theme/tokens.dart';
 import '../../../../shared/widgets/empty_state.dart';
 import '../../../../shared/widgets/star_rating.dart';
@@ -120,6 +123,27 @@ class _BookingCardState extends ConsumerState<_BookingCard> {
     }
   }
 
+  Future<void> _rate() async {
+    final driver = widget.booking.driver;
+    final result = await context.pushNamed<Object?>(
+      AppRoute.rating,
+      extra: RatingArgs(
+        bookingId: widget.booking.id,
+        personName: '${driver.firstName} ${driver.lastName}'.trim(),
+        personInitials: [driver.firstName, driver.lastName]
+            .map((part) => part.isNotEmpty ? part[0] : '')
+            .join(),
+        personPhotoUrl: driver.photoUrl,
+      ),
+    );
+    if (result == true && mounted) {
+      ref.invalidate(myBookingsControllerProvider);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Merci, ta note est envoyée.')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final booking = widget.booking;
@@ -194,6 +218,10 @@ class _BookingCardState extends ConsumerState<_BookingCard> {
               loading: _busy,
               onPressed: _busy ? null : _cancel,
             ),
+          ],
+          if (booking.canRate) ...[
+            const SizedBox(height: AppSpacing.sm),
+            YobuButton(label: 'Noter le trajet', onPressed: _rate),
           ],
         ],
       ),

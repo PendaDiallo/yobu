@@ -269,7 +269,7 @@ POST   /api/ratings                 { booking_id, score, tags, comment }
 - `TripPolicy::update/delete` → seulement `driver_id`
 - `BookingPolicy::view` → `rider_id` ou `driver_id` du trajet
 - `BookingPolicy::respond` → **le conducteur seul** peut accepter/refuser
-- `RatingPolicy::create` → le booking est `completed` ET l'auteur en est participant
+- `BookingPolicy::rate` → le booking est `completed` ET l'auteur en est participant *(porté par `BookingPolicy` et pas un `RatingPolicy` séparé : la permission est « puis-je noter CE booking », et la résolution du Gate est déterministe. L'unicité par personne, elle, est la contrainte `UNIQUE (booking_id, from_user_id)`, pas le code.)*
 
 ## 7. Ce qui n'est PAS là, et pourquoi
 

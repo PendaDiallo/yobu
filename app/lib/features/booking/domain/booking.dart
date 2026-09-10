@@ -16,6 +16,9 @@ abstract class Booking with _$Booking {
     /// « À venir » — calculé par l'API. L'app groupe dessus, elle ne
     /// compare aucune date elle-même.
     required bool upcoming,
+
+    /// Trajet fini, j'y étais, pas encore noté — calculé par l'API.
+    @Default(false) bool canRate,
     required int seats,
     required int pricePaid,
     required BookingTrip trip,

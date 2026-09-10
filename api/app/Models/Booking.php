@@ -6,6 +6,7 @@ use Database\Factories\BookingFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
@@ -58,5 +59,11 @@ class Booking extends Model
     public function rating(): HasOne
     {
         return $this->hasOne(Rating::class);
+    }
+
+    /** Les deux notes possibles (une par participant). */
+    public function ratings(): HasMany
+    {
+        return $this->hasMany(Rating::class);
     }
 }

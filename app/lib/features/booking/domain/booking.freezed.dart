@@ -17,7 +17,8 @@ mixin _$Booking {
 
  int get id; String get date; String get status;/// « À venir » — calculé par l'API. L'app groupe dessus, elle ne
 /// compare aucune date elle-même.
- bool get upcoming; int get seats; int get pricePaid; BookingTrip get trip; BookingParty get driver; BookingParty? get rider;
+ bool get upcoming;/// Trajet fini, j'y étais, pas encore noté — calculé par l'API.
+ bool get canRate; int get seats; int get pricePaid; BookingTrip get trip; BookingParty get driver; BookingParty? get rider;
 /// Create a copy of Booking
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,16 +31,16 @@ $BookingCopyWith<Booking> get copyWith => _$BookingCopyWithImpl<Booking>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Booking&&(identical(other.id, id) || other.id == id)&&(identical(other.date, date) || other.date == date)&&(identical(other.status, status) || other.status == status)&&(identical(other.upcoming, upcoming) || other.upcoming == upcoming)&&(identical(other.seats, seats) || other.seats == seats)&&(identical(other.pricePaid, pricePaid) || other.pricePaid == pricePaid)&&(identical(other.trip, trip) || other.trip == trip)&&(identical(other.driver, driver) || other.driver == driver)&&(identical(other.rider, rider) || other.rider == rider));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Booking&&(identical(other.id, id) || other.id == id)&&(identical(other.date, date) || other.date == date)&&(identical(other.status, status) || other.status == status)&&(identical(other.upcoming, upcoming) || other.upcoming == upcoming)&&(identical(other.canRate, canRate) || other.canRate == canRate)&&(identical(other.seats, seats) || other.seats == seats)&&(identical(other.pricePaid, pricePaid) || other.pricePaid == pricePaid)&&(identical(other.trip, trip) || other.trip == trip)&&(identical(other.driver, driver) || other.driver == driver)&&(identical(other.rider, rider) || other.rider == rider));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,date,status,upcoming,seats,pricePaid,trip,driver,rider);
+int get hashCode => Object.hash(runtimeType,id,date,status,upcoming,canRate,seats,pricePaid,trip,driver,rider);
 
 @override
 String toString() {
-  return 'Booking(id: $id, date: $date, status: $status, upcoming: $upcoming, seats: $seats, pricePaid: $pricePaid, trip: $trip, driver: $driver, rider: $rider)';
+  return 'Booking(id: $id, date: $date, status: $status, upcoming: $upcoming, canRate: $canRate, seats: $seats, pricePaid: $pricePaid, trip: $trip, driver: $driver, rider: $rider)';
 }
 
 
@@ -50,7 +51,7 @@ abstract mixin class $BookingCopyWith<$Res>  {
   factory $BookingCopyWith(Booking value, $Res Function(Booking) _then) = _$BookingCopyWithImpl;
 @useResult
 $Res call({
- int id, String date, String status, bool upcoming, int seats, int pricePaid, BookingTrip trip, BookingParty driver, BookingParty? rider
+ int id, String date, String status, bool upcoming, bool canRate, int seats, int pricePaid, BookingTrip trip, BookingParty driver, BookingParty? rider
 });
 
 
@@ -67,12 +68,13 @@ class _$BookingCopyWithImpl<$Res>
 
 /// Create a copy of Booking
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? date = null,Object? status = null,Object? upcoming = null,Object? seats = null,Object? pricePaid = null,Object? trip = null,Object? driver = null,Object? rider = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? date = null,Object? status = null,Object? upcoming = null,Object? canRate = null,Object? seats = null,Object? pricePaid = null,Object? trip = null,Object? driver = null,Object? rider = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String,upcoming: null == upcoming ? _self.upcoming : upcoming // ignore: cast_nullable_to_non_nullable
+as bool,canRate: null == canRate ? _self.canRate : canRate // ignore: cast_nullable_to_non_nullable
 as bool,seats: null == seats ? _self.seats : seats // ignore: cast_nullable_to_non_nullable
 as int,pricePaid: null == pricePaid ? _self.pricePaid : pricePaid // ignore: cast_nullable_to_non_nullable
 as int,trip: null == trip ? _self.trip : trip // ignore: cast_nullable_to_non_nullable
@@ -193,10 +195,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String date,  String status,  bool upcoming,  int seats,  int pricePaid,  BookingTrip trip,  BookingParty driver,  BookingParty? rider)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String date,  String status,  bool upcoming,  bool canRate,  int seats,  int pricePaid,  BookingTrip trip,  BookingParty driver,  BookingParty? rider)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Booking() when $default != null:
-return $default(_that.id,_that.date,_that.status,_that.upcoming,_that.seats,_that.pricePaid,_that.trip,_that.driver,_that.rider);case _:
+return $default(_that.id,_that.date,_that.status,_that.upcoming,_that.canRate,_that.seats,_that.pricePaid,_that.trip,_that.driver,_that.rider);case _:
   return orElse();
 
 }
@@ -214,10 +216,10 @@ return $default(_that.id,_that.date,_that.status,_that.upcoming,_that.seats,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String date,  String status,  bool upcoming,  int seats,  int pricePaid,  BookingTrip trip,  BookingParty driver,  BookingParty? rider)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String date,  String status,  bool upcoming,  bool canRate,  int seats,  int pricePaid,  BookingTrip trip,  BookingParty driver,  BookingParty? rider)  $default,) {final _that = this;
 switch (_that) {
 case _Booking():
-return $default(_that.id,_that.date,_that.status,_that.upcoming,_that.seats,_that.pricePaid,_that.trip,_that.driver,_that.rider);case _:
+return $default(_that.id,_that.date,_that.status,_that.upcoming,_that.canRate,_that.seats,_that.pricePaid,_that.trip,_that.driver,_that.rider);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -234,10 +236,10 @@ return $default(_that.id,_that.date,_that.status,_that.upcoming,_that.seats,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String date,  String status,  bool upcoming,  int seats,  int pricePaid,  BookingTrip trip,  BookingParty driver,  BookingParty? rider)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String date,  String status,  bool upcoming,  bool canRate,  int seats,  int pricePaid,  BookingTrip trip,  BookingParty driver,  BookingParty? rider)?  $default,) {final _that = this;
 switch (_that) {
 case _Booking() when $default != null:
-return $default(_that.id,_that.date,_that.status,_that.upcoming,_that.seats,_that.pricePaid,_that.trip,_that.driver,_that.rider);case _:
+return $default(_that.id,_that.date,_that.status,_that.upcoming,_that.canRate,_that.seats,_that.pricePaid,_that.trip,_that.driver,_that.rider);case _:
   return null;
 
 }
@@ -249,7 +251,7 @@ return $default(_that.id,_that.date,_that.status,_that.upcoming,_that.seats,_tha
 @JsonSerializable()
 
 class _Booking implements Booking {
-  const _Booking({required this.id, required this.date, required this.status, required this.upcoming, required this.seats, required this.pricePaid, required this.trip, required this.driver, this.rider});
+  const _Booking({required this.id, required this.date, required this.status, required this.upcoming, this.canRate = false, required this.seats, required this.pricePaid, required this.trip, required this.driver, this.rider});
   factory _Booking.fromJson(Map<String, dynamic> json) => _$BookingFromJson(json);
 
 @override final  int id;
@@ -258,6 +260,8 @@ class _Booking implements Booking {
 /// « À venir » — calculé par l'API. L'app groupe dessus, elle ne
 /// compare aucune date elle-même.
 @override final  bool upcoming;
+/// Trajet fini, j'y étais, pas encore noté — calculé par l'API.
+@override@JsonKey() final  bool canRate;
 @override final  int seats;
 @override final  int pricePaid;
 @override final  BookingTrip trip;
@@ -277,16 +281,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Booking&&(identical(other.id, id) || other.id == id)&&(identical(other.date, date) || other.date == date)&&(identical(other.status, status) || other.status == status)&&(identical(other.upcoming, upcoming) || other.upcoming == upcoming)&&(identical(other.seats, seats) || other.seats == seats)&&(identical(other.pricePaid, pricePaid) || other.pricePaid == pricePaid)&&(identical(other.trip, trip) || other.trip == trip)&&(identical(other.driver, driver) || other.driver == driver)&&(identical(other.rider, rider) || other.rider == rider));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Booking&&(identical(other.id, id) || other.id == id)&&(identical(other.date, date) || other.date == date)&&(identical(other.status, status) || other.status == status)&&(identical(other.upcoming, upcoming) || other.upcoming == upcoming)&&(identical(other.canRate, canRate) || other.canRate == canRate)&&(identical(other.seats, seats) || other.seats == seats)&&(identical(other.pricePaid, pricePaid) || other.pricePaid == pricePaid)&&(identical(other.trip, trip) || other.trip == trip)&&(identical(other.driver, driver) || other.driver == driver)&&(identical(other.rider, rider) || other.rider == rider));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,date,status,upcoming,seats,pricePaid,trip,driver,rider);
+int get hashCode => Object.hash(runtimeType,id,date,status,upcoming,canRate,seats,pricePaid,trip,driver,rider);
 
 @override
 String toString() {
-  return 'Booking(id: $id, date: $date, status: $status, upcoming: $upcoming, seats: $seats, pricePaid: $pricePaid, trip: $trip, driver: $driver, rider: $rider)';
+  return 'Booking(id: $id, date: $date, status: $status, upcoming: $upcoming, canRate: $canRate, seats: $seats, pricePaid: $pricePaid, trip: $trip, driver: $driver, rider: $rider)';
 }
 
 
@@ -297,7 +301,7 @@ abstract mixin class _$BookingCopyWith<$Res> implements $BookingCopyWith<$Res> {
   factory _$BookingCopyWith(_Booking value, $Res Function(_Booking) _then) = __$BookingCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String date, String status, bool upcoming, int seats, int pricePaid, BookingTrip trip, BookingParty driver, BookingParty? rider
+ int id, String date, String status, bool upcoming, bool canRate, int seats, int pricePaid, BookingTrip trip, BookingParty driver, BookingParty? rider
 });
 
 
@@ -314,12 +318,13 @@ class __$BookingCopyWithImpl<$Res>
 
 /// Create a copy of Booking
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? date = null,Object? status = null,Object? upcoming = null,Object? seats = null,Object? pricePaid = null,Object? trip = null,Object? driver = null,Object? rider = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? date = null,Object? status = null,Object? upcoming = null,Object? canRate = null,Object? seats = null,Object? pricePaid = null,Object? trip = null,Object? driver = null,Object? rider = freezed,}) {
   return _then(_Booking(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String,upcoming: null == upcoming ? _self.upcoming : upcoming // ignore: cast_nullable_to_non_nullable
+as bool,canRate: null == canRate ? _self.canRate : canRate // ignore: cast_nullable_to_non_nullable
 as bool,seats: null == seats ? _self.seats : seats // ignore: cast_nullable_to_non_nullable
 as int,pricePaid: null == pricePaid ? _self.pricePaid : pricePaid // ignore: cast_nullable_to_non_nullable
 as int,trip: null == trip ? _self.trip : trip // ignore: cast_nullable_to_non_nullable

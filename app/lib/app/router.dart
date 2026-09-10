@@ -134,7 +134,8 @@ final router = GoRouter(
     GoRoute(
       path: '/rating',
       name: AppRoute.rating,
-      builder: (context, state) => const RatingScreen(),
+      builder: (context, state) =>
+          RatingScreen(args: state.extra as RatingArgs?),
     ),
     // Galerie de dev — pas un écran produit (docs/01-produit.md n'en a que 16).
     GoRoute(

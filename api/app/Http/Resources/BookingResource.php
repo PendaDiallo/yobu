@@ -32,6 +32,13 @@ class BookingResource extends JsonResource
             // Calculé ici : l'app groupe sans comparer de dates elle-même.
             'upcoming' => in_array($this->status, ['pending', 'accepted'], true)
                 && $this->date->toDateString() >= Carbon::now('Africa/Dakar')->toDateString(),
+            // Le trajet est fini, j'y étais, et je n'ai pas encore noté.
+            // Faux si la relation `ratings` n'est pas chargée (seul l'écran
+            // « mes réservations » en a besoin et l'eager-load).
+            'can_rate' => $this->relationLoaded('ratings')
+                && $this->status === 'completed'
+                && $this->isParticipant($request->user())
+                && $this->ratings->isEmpty(),
             'seats' => $this->seats,
             'price_paid' => $this->price_paid,
             'trip' => [
@@ -44,6 +51,12 @@ class BookingResource extends JsonResource
             'driver' => $this->party($this->trip->driver),
             'rider' => $this->whenLoaded('rider', fn () => $this->party($this->rider)),
         ];
+    }
+
+    private function isParticipant(?User $user): bool
+    {
+        return $user !== null
+            && ($user->id === $this->rider_id || $user->id === $this->trip->driver_id);
     }
 
     /**

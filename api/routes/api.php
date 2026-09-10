@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\MeController;
+use App\Http\Controllers\Api\RatingController;
 use App\Http\Controllers\Api\TripController;
 use Illuminate\Support\Facades\Route;
 
@@ -32,4 +33,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/bookings/{booking}', [BookingController::class, 'update']);
 
     Route::get('/home', HomeController::class);
+
+    Route::post('/ratings', [RatingController::class, 'store']);
 });

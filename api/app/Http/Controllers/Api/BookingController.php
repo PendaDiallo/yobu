@@ -40,8 +40,12 @@ class BookingController extends Controller
     /** Mes réservations (passager). */
     public function index(Request $request): AnonymousResourceCollection
     {
+        $userId = $request->user()->id;
+
         $bookings = Booking::with('trip.driver')
-            ->where('rider_id', $request->user()->id)
+            // Ma note à moi sur chaque booking — sert à `can_rate`, sans N+1.
+            ->with(['ratings' => fn ($query) => $query->where('from_user_id', $userId)])
+            ->where('rider_id', $userId)
             ->orderByDesc('date')
             ->get();
 

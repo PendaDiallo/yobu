@@ -446,6 +446,29 @@ Documenté dans `CLAUDE.md` (conventions app) et `docs/02-technique.md §10` (ex
 
 **Demain :** J14 — notation + badges dérivés.
 
+---
+
+### J14 — 10/09 — Notation
+
+**Fait :**
+- **API** : `RatingService::rate(author, booking, score, tags, comment)` — déduit qui est noté (passager ↔ conducteur), `Rating::create`, puis recalcul de `to_user.rating` (moyenne arrondie 1 déc.) + `rating_count` **en transaction avec `lockForUpdate`**. Double note → `UniqueConstraintViolationException` catchée → 422 « Tu as déjà noté ce trajet. » — la contrainte `UNIQUE (booking_id, from_user_id)` **est** le garde-fou.
+- **API** : `POST /api/ratings` (`RatingController` fin + `StoreRatingRequest` : score 1-5, tags ∈ `Rating::TAGS`, comment ≤ 500). Autorisation par **`BookingPolicy::rate`** (booking `completed` + participant) — pas un `RatingPolicy` séparé, pour une résolution de Gate déterministe et par cohérence avec `respond`/`cancel`. `02-technique.md §6` mis à jour.
+- **API** : `BookingResource` : + `can_rate` (bool) — `completed && participant && pas encore noté`, faux si la relation `ratings` n'est pas chargée. `BookingController::index` eager-load ma note (filtrée `from_user_id = moi`), anti-N+1. `Booking` : + relation `ratings()` HasMany.
+- **Badges** : rien à faire, déjà dérivés dans `UserResource` depuis le J5 (`phone_verified` + `regular` à 10 trajets ; `trips_completed` alimenté par J13).
+- **App** : `TagChip` (pastille pilule, vert vif + texte profond). Feature `rating` complète (domain/data/presentation) : `RatingRepository.submit`, `rating_api` + impl, `rating_controller` (submit → repo + analytics **`trip_completed`**). `rating_screen` : avatar + nom (via `state.extra` = `RatingArgs`), `StarRating` mode saisie, 4 `TagChip`, commentaire optionnel, « Envoyer ». `bookings_screen` : bouton **« Noter le trajet »** sur les cartes *Passées* où `can_rate` ; au retour → `ref.invalidate(myBookingsControllerProvider)`. `Booking` (entité) : + `canRate`.
+- **Tests** `RatingTest` (8) — les 4 critères de fin + tags validés + `can_rate` exposé/retombe. **77 verts** (236 assertions). `flutter analyze` clean.
+- **Vérifié sur l'émulateur** : *Passées* → « Noter » → 4★ + 2 tags → Envoyer → retour, SnackBar, bouton disparu, note du conducteur (★★★★☆ 4,0) affichée. En base : `rating` 0→4.0, `count` 0→1.
+
+**Critère de fin atteint :** oui — noter met à jour la note · conducteur ET passager notent le même booking · pas deux fois (422) · non-participant / non-`completed` → 403.
+
+**Ce que j'ai appris :**
+- Le piège du guard `sanctum` (JOURNAL 18/07) refait surface : un test multi-acteurs (le passager PUIS le conducteur notent) renvoie l'ancien user si on ne fait pas `$this->app['auth']->forgetGuards()` entre les requêtes. Helper `postAs`/`getAs` dans `RatingTest`.
+- Un `Container` avec `alignment` dans un `Wrap` s'étire en pleine largeur (contraintes lâches) — les `TagChip` doivent shrink-wrapper (`Row` + `mainAxisSize.min`), pas s'aligner.
+
+**Reste :** déployer sur le VPS (`git pull` — nouvelle route, pas de nouveau cron). Le crontab `schedule:run` du J13 (§9) reste à poser.
+
+**Demain :** J15 — tampon n°2. **N'y planifie rien** (règle 3).
+
 <!-- Nouvelles entrées AU-DESSUS de cette ligne, la plus récente en premier -->
 
 ---
